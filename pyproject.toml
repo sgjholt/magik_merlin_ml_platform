@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "ml-platform"
 version = "0.1.0"
 description = "A comprehensive Panel-based ML experimentation platform"
-authors = [{name = "ML Platform Team"}]
-license = {text = "MIT"}
-requires-python = ">=3.9"
+authors = [{ name = "ML Platform Team" }]
+license = { text = "MIT" }
+requires-python = ">=3.12"
 # Core dependencies (PyCaret compatible versions)
 dependencies = [
     "numpy>=1.21,<1.27",
@@ -39,20 +39,20 @@ dev = [
     "pytest-mock>=3.10.0",
     "pytest-asyncio>=0.21.0",
     "sphinx>=6.0.0",
-    "sphinx-rtd-theme>=1.2.0"
+    "sphinx-rtd-theme>=1.2.0",
 ]
 
 # Optional cloud and ML dependencies
 cloud = [
     "mlflow>=2.9.0",
-    "snowflake-connector-python>=3.6.0", 
+    "snowflake-connector-python>=3.6.0",
     "boto3>=1.34.0",
     "redis>=5.0.0",
     "sqlalchemy>=2.0.0",
     "openpyxl>=3.1.0",
     "uvicorn>=0.25.0",
     "azure-storage-blob>=12.19.0",
-    "google-cloud-storage>=2.10.0"
+    "google-cloud-storage>=2.10.0",
 ]
 
 # ML dependencies (Phase 2)
@@ -63,7 +63,7 @@ ml = [
     "catboost>=1.2.0",
     "imbalanced-learn>=0.11.0",
     "yellowbrick>=1.5.0",
-    "shap>=0.44.0"
+    "shap>=0.44.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -157,7 +157,13 @@ line-ending = "auto"
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
-section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
 
 [tool.mypy]
 python_version = "3.12"
