@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import pandas as pd
 
@@ -7,7 +7,7 @@ from .base import DataSource, DataSourceConfig
 
 
 class LocalFileDataSource(DataSource):
-    SUPPORTED_FORMATS = {
+    SUPPORTED_FORMATS: ClassVar[dict[str, Any]] = {
         ".csv": pd.read_csv,
         ".parquet": pd.read_parquet,
         ".json": pd.read_json,
@@ -15,7 +15,7 @@ class LocalFileDataSource(DataSource):
         ".xls": pd.read_excel,
     }
 
-    def __init__(self, config: DataSourceConfig):
+    def __init__(self, config: DataSourceConfig) -> None:
         super().__init__(config)
         self.base_path = Path(config.connection_params.get("base_path", "./data"))
         # Only create directory if it's a valid path and doesn't exist
@@ -35,15 +35,17 @@ class LocalFileDataSource(DataSource):
     def test_connection(self) -> bool:
         return self.base_path.exists() and self.base_path.is_dir()
 
-    def load_data(self, file_path: str, **kwargs) -> pd.DataFrame:
+    def load_data(self, file_path: str, **kwargs) -> pd.DataFrame:  # noqa: ANN003
         full_path = self.base_path / file_path
 
         if not full_path.exists():
-            raise FileNotFoundError(f"File not found: {full_path}")
+            msg = f"File not found: {full_path}"
+            raise FileNotFoundError(msg)
 
         file_extension = full_path.suffix.lower()
         if file_extension not in self.SUPPORTED_FORMATS:
-            raise ValueError(f"Unsupported file format: {file_extension}")
+            msg = f"Unsupported file format: {file_extension}"
+            raise ValueError(msg)
 
         reader_func = self.SUPPORTED_FORMATS[file_extension]
 
@@ -52,29 +54,33 @@ class LocalFileDataSource(DataSource):
             return self._cache[cache_key]
 
         try:
-            df = reader_func(full_path, **kwargs)
+            _df = reader_func(full_path, **kwargs)
             if self.config.cache_enabled:
-                self._cache[cache_key] = df
-            return df
+                self._cache[cache_key] = _df
+            else:
+                return _df
         except Exception as e:
-            raise RuntimeError(f"Error loading file {full_path}: {e!s}")
+            msg = f"Error loading file {full_path}: {e!s}"
+            raise RuntimeError(msg) from e
 
     def get_schema(self, file_path: str) -> dict[str, Any]:
-        df = self.load_data(file_path, nrows=1)
+        _df = self.load_data(file_path, nrows=1)
         return {
-            "columns": list(df.columns),
-            "dtypes": df.dtypes.to_dict(),
-            "shape": df.shape,
+            "columns": list(_df.columns),
+            "dtypes": _df.dtypes.to_dict(),
+            "shape": _df.shape,
         }
 
     def list_tables(self) -> list[str]:
         files = []
-        for ext in self.SUPPORTED_FORMATS.keys():
+        for ext in self.SUPPORTED_FORMATS:
             files.extend(self.base_path.glob(f"**/*{ext}"))
 
         return [str(f.relative_to(self.base_path)) for f in files]
 
-    def save_data(self, df: pd.DataFrame, file_path: str, **kwargs) -> None:
+    def save_data(
+        self, df: pd.DataFrame, file_path: str, **kwargs  # noqa: ANN003
+    ) -> None:
         full_path = self.base_path / file_path
         full_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -89,4 +95,5 @@ class LocalFileDataSource(DataSource):
         elif file_extension in [".xlsx", ".xls"]:
             df.to_excel(full_path, index=False, **kwargs)
         else:
-            raise ValueError(f"Unsupported file format for saving: {file_extension}")
+            msg = f"Unsupported file format for saving: {file_extension}"
+            raise ValueError(msg)
