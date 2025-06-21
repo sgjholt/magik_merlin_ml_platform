@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 
 
 class ModelEvaluationPanel:
-    def __init__(self):
+    def __init__(self) -> None:
         # Model selection for comparison
         self.model_select = pn.widgets.MultiChoice(
             name="Select Models to Compare", options=[], disabled=True

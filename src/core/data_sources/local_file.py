@@ -57,7 +57,7 @@ class LocalFileDataSource(DataSource):
             _df = reader_func(full_path, **kwargs)
             if self.config.cache_enabled:
                 self._cache[cache_key] = _df
-            else:
+            if not self._raise_if_df_empty(_df):
                 return _df
         except Exception as e:
             msg = f"Error loading file {full_path}: {e!s}"
@@ -97,3 +97,10 @@ class LocalFileDataSource(DataSource):
         else:
             msg = f"Unsupported file format for saving: {file_extension}"
             raise ValueError(msg)
+
+    def _raise_if_df_empty(self, df: pd.DataFrame) -> bool:
+        """Raise an error if the DataFrame is empty."""
+        if df.empty:
+            msg = "DataFrame is empty."
+            raise ValueError(msg)
+        return False

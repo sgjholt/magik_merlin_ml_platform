@@ -3,22 +3,22 @@ from typing import Any
 import pandas as pd
 import panel as pn
 
-from ...core.data_sources import DataSource, LocalFileDataSource
+from src.core.data_sources import DataSource, LocalFileDataSource
 
 try:
-    from ...core.data_sources import SnowflakeDataSource
+    from src.core.data_sources import SnowflakeDataSource
 except ImportError:
     SnowflakeDataSource = None
 
 try:
-    from ...core.data_sources import AWSDataSource
+    from src.core.data_sources import AWSDataSource
 except ImportError:
     AWSDataSource = None
-from ...core.data_sources.base import DataSourceConfig
+from src.core.data_sources.base import DataSourceConfig
 
 
 class DataManagementPanel:
-    def __init__(self):
+    def __init__(self) -> None:
         self.current_datasource: DataSource | None = None
         self.current_data: pd.DataFrame | None = None
         self.data_updated_callback = None
@@ -47,7 +47,7 @@ class DataManagementPanel:
             name="Load Data", button_type="success", disabled=True, width=150
         )
 
-        self.data_preview = pn.pane.DataFrame(pd.DataFrame(), width=800, height=400)
+        self.data_preview = pn.pane.DataFrame(pd.DataFrame({}), width=800, height=400)
 
         self.data_profile = pn.pane.JSON({}, theme="light")
 
@@ -62,7 +62,7 @@ class DataManagementPanel:
         # Create the main panel
         self.panel = self._create_panel()
 
-    def _setup_callbacks(self):
+    def _setup_callbacks(self) -> None:
         self.datasource_type_select.param.watch(
             self._on_datasource_type_change, "value"
         )
@@ -70,7 +70,7 @@ class DataManagementPanel:
         self.load_button.on_click(self._on_load_data)
         self.table_select.param.watch(self._on_table_select, "value")
 
-    def _create_panel(self):
+    def _create_panel(self) -> pn.Column:
         return pn.Column(
             pn.pane.Markdown("## Data Source Configuration"),
             pn.Row(
@@ -88,7 +88,7 @@ class DataManagementPanel:
             self.data_profile,
         )
 
-    def _on_datasource_type_change(self, event):
+    def _on_datasource_type_change(self, event: Any) -> None:  # noqa: ANN401
         self.connection_inputs.clear()
 
         if event.new == "Local Files":
@@ -142,7 +142,7 @@ class DataManagementPanel:
                 params[key] = widget.value
         return params
 
-    def _on_connect(self, event):
+    def _on_connect(self, event: Any) -> None:  # noqa: ANN401, ARG002
         try:
             params = self._get_connection_params()
 
@@ -166,8 +166,8 @@ class DataManagementPanel:
             ):
                 self.current_datasource = AWSDataSource(config)
             else:
-                raise ValueError(
-                    f"Unsupported or unavailable datasource: {self.datasource_type_select.value}"
+                self._raise_unsupported_datasource_error(
+                    self.datasource_type_select.value
                 )
 
             # Test connection
@@ -186,19 +186,25 @@ class DataManagementPanel:
                     "<span style='color: red;'>●</span> Connection Failed"
                 )
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.connection_status.object = (
                 f"<span style='color: red;'>●</span> Error: {e!s}"
             )
 
-    def _on_table_select(self, event):
+    def _raise_unsupported_datasource_error(self, datasource_type: str) -> None:
+        """Raise a ValueError for unsupported or unavailable datasources."""
+        msg = f"Unsupported or unavailable datasource: {datasource_type}"
+        raise ValueError(msg)
+
+    def _on_table_select(self, event: Any) -> None:  # noqa: ANN401
         if event.new:
             self.load_button.disabled = False
 
-    def _on_load_data(self, event):
+    def _on_load_data(self, event: Any) -> None:  # noqa: ANN401, ARG002
         if not self.current_datasource or not self.table_select.value:
+            print("No datasource or table selected")
             return
-
+        # Try to update data preview
         try:
             # Load data preview
             if isinstance(self.current_datasource, LocalFileDataSource):
@@ -209,12 +215,29 @@ class DataManagementPanel:
                 self.current_data = self.current_datasource.load_data(
                     self.table_select.value
                 )
-
             # Update preview (show first 100 rows)
-            preview_data = self.current_data.head(100)
+            # logger.debug(f"Loaded data from {self.table_select.value}")  # noqa: ERA001
+            preview_data = self.current_data.head(100).iloc[:, :]
+            # logger.debug(f"Data preview:\n{preview_data}")  # noqa: ERA001
+            # logger.debug(preview_data.info())  # noqa: ERA001
+            # If no data is available in the preview, show a message instead of an empty table
+            if preview_data.empty:
+                preview_data = pd.DataFrame(
+                    {
+                        "Message": [
+                            "Data preview table is empty. Check the data configuration, query or filters."
+                        ]
+                    }
+                )
             self.data_preview.object = preview_data
 
-            # Update data profile
+        except Exception as e:  # noqa: BLE001
+            # logger.error(f"Error updating data preview: {e!s}")  # noqa: ERA001
+            self.data_preview.object = pd.DataFrame(
+                {"Error": [f"Failed to load data preview: {e!s}"]}
+            )
+        # Try to update data profile
+        try:
             profile = self.current_datasource.get_data_profile(self.current_data)
             self.data_profile.object = profile
 
@@ -222,7 +245,7 @@ class DataManagementPanel:
             if self.data_updated_callback:
                 self.data_updated_callback(self.current_data)
 
-        except Exception as e:
-            self.data_preview.object = pd.DataFrame(
-                {"Error": [f"Failed to load data: {e!s}"]}
+        except ValueError as e:
+            self.data_profile.object = pd.DataFrame(
+                {"Error": [f"Failed to load data profile: {e!s}"]}
             )

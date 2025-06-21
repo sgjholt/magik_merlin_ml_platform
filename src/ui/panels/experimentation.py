@@ -1,13 +1,16 @@
+import datetime
+import time
+from typing import Any
+
 import pandas as pd
 import panel as pn
-from typing import Optional
 
-from ...core.ml.pycaret_integration import AutoMLWorkflow
-from ...core.experiments.tracking import ExperimentTracker
+from src.core.experiments.tracking import ExperimentTracker
+from src.core.ml.pycaret_integration import AutoMLWorkflow
 
 
 class ExperimentationPanel:
-    def __init__(self, experiment_tracker: Optional[ExperimentTracker] = None):
+    def __init__(self, experiment_tracker: ExperimentTracker | None = None) -> None:
         self.current_experiment = None
         self.experiment_tracker = experiment_tracker
         self.automl_workflow = None
@@ -92,11 +95,11 @@ class ExperimentationPanel:
         # Create the main panel
         self.panel = self._create_panel()
 
-    def _setup_callbacks(self):
+    def _setup_callbacks(self) -> None:
         self.start_experiment_button.on_click(self._on_start_experiment)
         self.stop_experiment_button.on_click(self._on_stop_experiment)
 
-    def _create_panel(self):
+    def _create_panel(self) -> pn.Column:
         return pn.Column(
             pn.pane.Markdown("## Experiment Configuration"),
             pn.Row(
@@ -122,7 +125,7 @@ class ExperimentationPanel:
             self.results_table,
         )
 
-    def update_data_options(self, data: pd.DataFrame):
+    def update_data_options(self, data: pd.DataFrame) -> None:
         """Update target and feature options based on loaded data"""
         if data is not None and not data.empty:
             self.current_data = data
@@ -139,7 +142,7 @@ class ExperimentationPanel:
             # Enable experiment start
             self.start_experiment_button.disabled = False
 
-    def _on_start_experiment(self, event):
+    def _on_start_experiment(self, event: Any) -> None:  # noqa: ANN401, ARG002
         """Start ML experiment"""
         if not self.experiment_name.value:
             self._log_message("Error: Please enter an experiment name")
@@ -169,13 +172,13 @@ class ExperimentationPanel:
         # Run real experiment
         self._run_experiment()
 
-    def _on_stop_experiment(self, event):
+    def _on_stop_experiment(self, event: Any) -> None:  # noqa: ANN401, ARG002
         """Stop current experiment"""
         self.start_experiment_button.disabled = False
         self.stop_experiment_button.disabled = True
         self._log_message("Experiment stopped by user")
 
-    def _run_experiment(self):
+    def _run_experiment(self) -> None:
         """Run real ML experiment using PyCaret"""
         try:
             # Initialize AutoML workflow
@@ -208,9 +211,9 @@ class ExperimentationPanel:
                 data=self.current_data,
                 task_type=self.task_type_select.value.lower(),
                 target=self.target_select.value,
-                model_selection="compare_all"
-                if len(selected_models) > 1
-                else selected_models[0],
+                model_selection=(
+                    "compare_all" if len(selected_models) > 1 else selected_models[0]
+                ),
                 tune_hyperparameters=True,
             )
 
@@ -254,11 +257,11 @@ class ExperimentationPanel:
                 self.experiment_completed_callback()
 
         except ImportError as e:
-            self._log_message(f"PyCaret not available: {str(e)}")
+            self._log_message(f"PyCaret not available: {e!s}")
             self._log_message("Falling back to simulation mode...")
             self._simulate_experiment()
-        except Exception as e:
-            self._log_message(f"Error during experiment: {str(e)}")
+        except Exception as e:  # noqa: BLE001
+            self._log_message(f"Error during experiment: {e!s}")
             # Fallback to simulation for demo purposes
             self._simulate_experiment()
 
@@ -267,14 +270,13 @@ class ExperimentationPanel:
             self.start_experiment_button.disabled = False
             self.stop_experiment_button.disabled = True
 
-    def _simulate_experiment(self):
+    def _simulate_experiment(self) -> None:
         """Simulate experiment execution with progress updates (fallback)"""
-        import time
 
         # Simulate model training progress
         for i in range(0, 101, 20):
             self.progress_bar.value = i
-            if i < 100:
+            if i < 100:  # noqa: PLR2004
                 model_name = self.model_select.value[
                     i // 20 % len(self.model_select.value)
                 ]
@@ -282,18 +284,17 @@ class ExperimentationPanel:
             time.sleep(0.5)  # Simulate processing time
 
         # Generate mock results
-        results_data = []
-        for model in self.model_select.value:
-            results_data.append(
-                {
-                    "Model": model,
-                    "Accuracy": round(0.7 + (hash(model) % 100) / 500, 3),
-                    "Precision": round(0.75 + (hash(model) % 80) / 400, 3),
-                    "Recall": round(0.72 + (hash(model) % 90) / 450, 3),
-                    "F1-Score": round(0.73 + (hash(model) % 85) / 425, 3),
-                    "Training Time": f"{(hash(model) % 300) + 30}s",
-                }
-            )
+        results_data = [
+            {
+                "Model": model,
+                "Accuracy": round(0.7 + (hash(model) % 100) / 500, 3),
+                "Precision": round(0.75 + (hash(model) % 80) / 400, 3),
+                "Recall": round(0.72 + (hash(model) % 90) / 450, 3),
+                "F1-Score": round(0.73 + (hash(model) % 85) / 425, 3),
+                "Training Time": f"{(hash(model) % 300) + 30}s",
+            }
+            for model in self.model_select.value
+        ]
 
         self.results_table.object = pd.DataFrame(results_data)
         self._log_message("Experiment completed successfully!")
@@ -306,11 +307,10 @@ class ExperimentationPanel:
         self.start_experiment_button.disabled = False
         self.stop_experiment_button.disabled = True
 
-    def _log_message(self, message: str):
+    def _log_message(self, message: str) -> None:
         """Add message to experiment log"""
-        import datetime
 
-        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        timestamp = datetime.datetime.now(tz=datetime.UTC).strftime("%H:%M:%S")
         log_entry = f"[{timestamp}] {message}<br>"
 
         current_log = self.experiment_log.object

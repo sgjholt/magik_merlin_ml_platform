@@ -1,9 +1,13 @@
+import time
+from datetime import datetime
+from typing import Any
+
 import pandas as pd
 import panel as pn
 
 
 class DeploymentPanel:
-    def __init__(self):
+    def __init__(self) -> None:
         # Model selection for deployment
         self.model_select = pn.widgets.Select(
             name="Select Model for Deployment", options=[], disabled=True
@@ -90,13 +94,13 @@ class DeploymentPanel:
         # Initialize with mock data
         self._initialize_mock_data()
 
-    def _setup_callbacks(self):
+    def _setup_callbacks(self) -> None:
         self.deploy_button.on_click(self._on_deploy)
         self.undeploy_button.on_click(self._on_undeploy)
         self.test_endpoint_button.on_click(self._on_test_endpoint)
         self.model_select.param.watch(self._on_model_select, "value")
 
-    def _create_panel(self):
+    def _create_panel(self) -> pn.Column:
         return pn.Column(
             pn.pane.Markdown("## Model Deployment"),
             pn.Row(
@@ -145,7 +149,7 @@ class DeploymentPanel:
             ),
         )
 
-    def _initialize_mock_data(self):
+    def _initialize_mock_data(self) -> None:
         """Initialize with mock deployment data"""
         # Mock available models
         models = ["Random Forest v1.0", "XGBoost v2.1", "LightGBM v1.5"]
@@ -167,7 +171,7 @@ class DeploymentPanel:
 
         self.deployments_table.object = deployments_data
 
-    def _on_model_select(self, event):
+    def _on_model_select(self, event: pn.events.Event) -> None:
         """Handle model selection"""
         if event.new:
             self.deploy_button.disabled = False
@@ -190,7 +194,7 @@ class DeploymentPanel:
             }
             self.endpoint_info.object = endpoint_info
 
-    def _on_deploy(self, event):
+    def _on_deploy(self, event: Any) -> None:  # noqa: ANN401, ARG002
         """Deploy the selected model"""
         if not self.model_select.value or not self.deployment_name.value:
             self._log_message("Error: Please select a model and enter deployment name")
@@ -212,7 +216,6 @@ class DeploymentPanel:
         self._log_message(f"Instance type: {self.instance_type.value}")
 
         # Simulate deployment process
-        import time
 
         time.sleep(2)  # Simulate deployment time
 
@@ -231,7 +234,7 @@ class DeploymentPanel:
         # Update endpoint info with live endpoint
         self._update_live_endpoint_info()
 
-    def _on_undeploy(self, event):
+    def _on_undeploy(self, event: Any) -> None:  # noqa: ANN401, ARG002
         """Undeploy the current deployment"""
         self.deploy_button.disabled = False
         self.undeploy_button.disabled = True
@@ -244,7 +247,6 @@ class DeploymentPanel:
         self._log_message(f"Undeploying: {self.deployment_name.value}")
 
         # Simulate undeployment
-        import time
 
         time.sleep(1)
 
@@ -254,13 +256,11 @@ class DeploymentPanel:
 
         self._log_message("Undeployment completed")
 
-    def _on_test_endpoint(self, event):
+    def _on_test_endpoint(self, even: Any) -> None:  # noqa: ANN401, ARG002
         """Test the deployed endpoint"""
         self._log_message("Testing endpoint...")
 
         # Simulate API test
-        import time
-
         time.sleep(1)
 
         self._log_message("Endpoint test successful!")
@@ -270,7 +270,7 @@ class DeploymentPanel:
             "Sample prediction: {'prediction': 0.87, 'class': 'positive'}"
         )
 
-    def _update_deployments_table(self):
+    def _update_deployments_table(self) -> None:
         """Update the active deployments table"""
         current_data = self.deployments_table.object
 
@@ -290,7 +290,7 @@ class DeploymentPanel:
         updated_data = pd.concat([current_data, new_deployment], ignore_index=True)
         self.deployments_table.object = updated_data
 
-    def _update_live_endpoint_info(self):
+    def _update_live_endpoint_info(self) -> None:
         """Update endpoint info with live deployment details"""
         endpoint_info = {
             "Status": "Live",
@@ -306,9 +306,8 @@ class DeploymentPanel:
         }
         self.endpoint_info.object = endpoint_info
 
-    def _log_message(self, message: str):
+    def _log_message(self, message: str) -> None:
         """Add message to deployment log"""
-        import datetime
 
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         log_entry = f"[{timestamp}] {message}<br>"
