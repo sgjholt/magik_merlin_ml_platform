@@ -1542,6 +1542,7 @@ ml = [
 [package.dev-dependencies]
 dev = [
     { name = "python-semantic-release" },
+    { name = "ruff" },
 ]
 
 [package.metadata]
@@ -1591,7 +1592,10 @@ requires-dist = [
 provides-extras = ["dev", "cloud", "ml"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "python-semantic-release", specifier = ">=9.21.1" }]
+dev = [
+    { name = "python-semantic-release", specifier = ">=9.21.1" },
+    { name = "ruff", specifier = ">=0.12.0" },
+]
 
 [[package]]
 name = "mlflow"

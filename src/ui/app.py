@@ -9,6 +9,7 @@ from .panels.data_management import DataManagementPanel
 from .panels.deployment import DeploymentPanel
 from .panels.experimentation import ExperimentationPanel
 from .panels.model_evaluation import ModelEvaluationPanel
+from .panels.visualization import VisualizationPanel
 
 
 class MLPlatformApp:
@@ -23,6 +24,7 @@ class MLPlatformApp:
         self.experiment_panel = ExperimentationPanel(self.experiment_tracker)
         self.evaluation_panel = ModelEvaluationPanel()
         self.deployment_panel = DeploymentPanel()
+        self.visualization_panel = VisualizationPanel(self.experiment_panel.experiment_manager)
 
         # Set up data flow between panels
         self.data_panel.data_updated_callback = self._on_data_updated
@@ -153,6 +155,7 @@ class MLPlatformApp:
             ("📊 Data Management", self.data_panel.panel),
             ("🔬 Experimentation", self.experiment_panel.panel),
             ("📈 Model Evaluation", self.evaluation_panel.panel),
+            ("📉 Visualizations", self.visualization_panel.panel),
             ("🚀 Deployment", self.deployment_panel.panel),
             dynamic=True,
             sizing_mode="stretch_width",
@@ -188,6 +191,9 @@ class MLPlatformApp:
         """Callback when data is updated in data management panel"""
         # Update experiment panel with new data
         self.experiment_panel.update_data_options(data)
+        
+        # Update visualization panel with new data
+        self.visualization_panel.update_data(data)
 
         # Update status indicator
         if data is not None and not data.empty:

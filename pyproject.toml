@@ -226,4 +226,5 @@ strict = true
 [dependency-groups]
 dev = [
     "python-semantic-release>=9.21.1",
+    "ruff>=0.12.0",
 ]
