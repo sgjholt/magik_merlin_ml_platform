@@ -1,123 +1,85 @@
-# Changelog
+# CHANGELOG
 
-All notable changes to the ML Experimentation Platform will be documented in this file.
 
-## [0.1.0] - 2024-01-15
+## v0.2.0 (2025-06-22)
 
-### Added - Phase 1 Foundation Complete ✅
+### Bug Fixes
 
-#### Project Structure
-- Complete directory structure following best practices
-- Modular architecture with separation of concerns
-- Proper Python package structure with `__init__.py` files
+- Implement comprehensive MLflow server setup and configuration
+  ([`30be635`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/30be6352dc417f048acc323f0fb89ce579dc424c))
 
-#### Data Source Integration
-- **LocalFileDataSource**: CSV, Parquet, JSON, Excel support
-- **SnowflakeDataSource**: Cloud data warehouse integration (optional)
-- **AWSDataSource**: S3 data source connector (optional)
-- Extensible base class for adding new data sources
-- Connection pooling and caching capabilities
-- Data profiling and schema detection
+- Add MLflow server startup scripts with proper configuration management - Create setup_platform.py
+  for automated environment initialization - Implement robust MLflow health checking with fallback
+  endpoints - Fix ExperimentTracker to use settings for tracking URI configuration - Add MLflow
+  management scripts (start, stop, status, ui commands) - Configure proper MLflow backend store and
+  artifact storage - Update settings to use 127.0.0.1 for better local development - Test MLflow
+  integration with experiment runs and parameter logging - Create comprehensive platform setup and
+  validation scripts
 
-#### Panel Web Application
-- **Material Design** interface using Panel framework
-- **Data Management Panel**: Source configuration and data loading
-- **Experimentation Panel**: ML task setup and model configuration
-- **Model Evaluation Panel**: Performance comparison and visualization
-- **Deployment Panel**: Model deployment and monitoring
-- Responsive and interactive UI components
+MLflow server now starts properly and integrates seamlessly with experiment tracking.
 
-#### MLflow Integration
-- Complete experiment tracking capabilities
-- Model registry and lifecycle management
-- Parameter and metric logging
-- Artifact storage and retrieval
-- Model versioning and deployment support
+🤖 Generated with [Claude Code](https://claude.ai/code)
 
-#### Configuration Management
-- Environment-based configuration with Pydantic
-- Secure credential handling
-- Feature flags and runtime settings
-- Multi-environment support (dev, staging, prod)
+Co-Authored-By: Claude <noreply@anthropic.com>
 
-#### Testing Framework
-- **pytest** testing framework with 51 comprehensive tests
-- **Unit tests** (35) for individual components
-- **Integration tests** (16) for cross-component workflows
-- **Coverage reporting** with HTML output
-- **Test fixtures** for shared test data
-- **CI/CD ready** test configuration
+### Features
 
-#### Development Tools
-- **Makefile** with convenient development commands
-- **Virtual environment** setup with uv
-- **Requirements files** separated by purpose
-- **Git configuration** with .gitignore
-- **Code quality** tools setup (black, flake8, mypy)
+- Add MLflow server controls to Panel UI sidebar
+  ([`f2d8cce`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/f2d8cce80b1c1c3bae86a6065637a841d1e7dea3))
 
-### Technical Specifications
+- Add Start/Stop MLflow buttons with real-time status indicators - Implement MLflow UI button to
+  open tracking interface in browser - Add threaded MLflow server startup to prevent UI blocking -
+  Update status indicators dynamically based on server availability - Include comprehensive MLflow
+  management in README - Test programmatic server start/stop functionality for UI integration
 
-#### Dependencies
-- **Core**: Panel, Pandas, NumPy, scikit-learn, Plotly (via pyproject.toml)
-- **Optional Groups**: dev, cloud, ml (for different use cases)
-- **Management**: Single pyproject.toml for all dependency groups
+Users can now manage MLflow server directly from the platform interface without command line.
 
-#### Performance
-- Data loading: Supports files up to 10GB efficiently
-- UI responsiveness: <500ms for most interactions
-- Test execution: 51 tests complete in <5 seconds
-- Caching: Configurable data source caching
+🤖 Generated with [Claude Code](https://claude.ai/code)
 
-#### Security
-- Secure credential storage
-- Environment variable configuration
-- No hardcoded secrets
-- Parameterized queries to prevent injection
+Co-Authored-By: Claude <noreply@anthropic.com>
 
-### Phase 1 Deliverables ✅
+- Implement comprehensive experiment tracking capabilities
+  ([`663ed53`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/663ed53267f2b5ef0354eb63587a970306e03c2c))
 
-1. ✅ **Project structure and development environment**
-2. ✅ **Basic data source connectors (Local, Snowflake, AWS)**
-3. ✅ **Core Panel application framework**
-4. ✅ **MLflow integration**
-5. ✅ **Comprehensive testing framework**
-6. ✅ **Documentation and setup guides**
+- Add ExperimentManager for enhanced experiment lifecycle management - Support for experiment
+  metadata, progress tracking, and error handling - Model versioning and artifact management with
+  file storage - Real-time experiment history and comparison features in UI - Integration with
+  MLflow for advanced experiment tracking - Persistent experiment storage with JSON metadata files -
+  Enhanced experimentation panel with history table and comparison tools - Performance monitoring
+  and structured experiment logging
 
-### Known Limitations (To be addressed in Phase 2)
+🤖 Generated with [Claude Code](https://claude.ai/code)
 
-- PyCaret integration not yet implemented
-- Limited ML model support (mock data only)
-- No automated model training workflows
-- Basic visualization components (mock charts)
-- Deployment functionality is simulated
+Co-Authored-By: Claude <noreply@anthropic.com>
 
-### Next Phase Preview
+- Implement comprehensive logging system with Python standard library
+  ([`6a20b0d`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/6a20b0d635c4b4ca5e9252806636dc8528bbe7cd))
 
-**Phase 2** will focus on:
-- PyCaret ML workflow integration
-- Real experiment tracking and model training
-- Advanced visualization components
-- Model comparison and evaluation tools
+- Add enterprise-grade logging configuration with environment-based setup - Support for structured
+  JSON logging in production, colored console in development - ML-specific log formatters with
+  experiment tracking context - Performance monitoring decorator for ML operations - Comprehensive
+  error logging with stack traces and context - File rotation and retention policies for different
+  log types - Replace print statements with proper logging in data sources and ML modules -
+  Integration with MLflow and monitoring systems
 
----
+🤖 Generated with [Claude Code](https://claude.ai/code)
 
-## Development Notes
+Co-Authored-By: Claude <noreply@anthropic.com>
 
-### Testing Status
-- **Unit Tests**: 35/35 passing ✅
-- **Integration Tests**: 16/16 passing ✅  
-- **Code Coverage**: >90% ✅
-- **Test Framework**: pytest with fixtures ✅
 
-### Code Quality
-- **Linting**: flake8 configured ✅
-- **Formatting**: black configured ✅
-- **Type Hints**: mypy ready ✅
-- **Documentation**: Comprehensive README and guides ✅
+## v0.1.0 (2025-06-22)
 
-### Architecture Decisions
-- **Framework**: Panel chosen for interactive ML applications
-- **Testing**: pytest for comprehensive test coverage
-- **Configuration**: Pydantic for type-safe settings
-- **Dependencies**: Modular approach with optional cloud features
-- **Structure**: Clean separation between UI, core logic, and data sources
+### Features
+
+- Initial ML platform implementation with Panel UI and automated versioning
+  ([`71d8be1`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/71d8be132365dbf57526a09eba9c2f70f2f325ca))
+
+- Complete Panel-based ML experimentation platform - Data source connectors for local files, AWS S3,
+  Snowflake - PyCaret integration for automated ML workflows - MLflow experiment tracking -
+  Interactive UI with data management, experimentation, evaluation, and deployment panels -
+  Comprehensive test suite with unit and integration tests - Automated versioning with
+  python-semantic-release - Type annotations and Ruff code quality tools
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
