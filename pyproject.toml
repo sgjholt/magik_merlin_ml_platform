@@ -180,7 +180,6 @@ prerelease = false
 
 [tool.semantic_release.changelog]
 template_dir = "templates"
-changelog_file = "CHANGELOG.md"
 exclude_commit_patterns = [
     "^build:",
     "^chore:",
@@ -190,6 +189,9 @@ exclude_commit_patterns = [
     "^refactor:",
     "^test:",
 ]
+
+[tool.semantic_release.changelog.default_templates]
+changelog_file = "CHANGELOG.md"
 
 [tool.semantic_release.commit_parser_options]
 allowed_tags = [
