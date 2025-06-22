@@ -8,24 +8,28 @@ This module provides enterprise-grade logging capabilities with:
 - Integration with MLflow and monitoring systems
 """
 
+import functools
 import json
 import logging
 import logging.config
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import ClassVar
 
-from ...config.settings import settings
+from src.config.settings import settings
 
 
 class JSONFormatter(logging.Formatter):
     """JSON formatter for structured logging in production environments."""
-    
+
     def format(self, record: logging.LogRecord) -> str:
         """Format log record as JSON with ML-specific fields."""
         log_entry = {
-            "timestamp": datetime.fromtimestamp(record.created).isoformat(),
+            "timestamp": datetime.fromtimestamp(
+                record.created, tz=datetime.UTC
+            ).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),
@@ -33,47 +37,53 @@ class JSONFormatter(logging.Formatter):
             "function": record.funcName,
             "line": record.lineno,
         }
-        
+
         # Add exception information if present
         if record.exc_info:
             log_entry["exception"] = self.formatException(record.exc_info)
-            
+
         # Add extra fields for ML operations
         extra_fields = {
-            "experiment_id", "run_id", "model_name", "data_source", 
-            "pipeline_stage", "performance_metrics", "user_id", "session_id"
+            "experiment_id",
+            "run_id",
+            "model_name",
+            "data_source",
+            "pipeline_stage",
+            "performance_metrics",
+            "user_id",
+            "session_id",
         }
-        
+
         for field in extra_fields:
             if hasattr(record, field):
                 log_entry[field] = getattr(record, field)
-                
+
         return json.dumps(log_entry, default=str)
 
 
 class ColoredConsoleFormatter(logging.Formatter):
     """Colored console formatter for development environments."""
-    
+
     # Color codes for different log levels
-    COLORS = {
-        "DEBUG": "\033[36m",      # Cyan
-        "INFO": "\033[32m",       # Green  
-        "WARNING": "\033[33m",    # Yellow
-        "ERROR": "\033[31m",      # Red
-        "CRITICAL": "\033[35m",   # Magenta
+    COLORS: ClassVar[dict[str, str]] = {
+        "DEBUG": "\033[36m",  # Cyan
+        "INFO": "\033[32m",  # Green
+        "WARNING": "\033[33m",  # Yellow
+        "ERROR": "\033[31m",  # Red
+        "CRITICAL": "\033[35m",  # Magenta
     }
     RESET = "\033[0m"
-    
+
     def format(self, record: logging.LogRecord) -> str:
         """Format with colors and ML-specific context."""
         color = self.COLORS.get(record.levelname, "")
         reset = self.RESET
-        
+
         # Format with color and additional context
         formatted = f"{color}[{record.levelname:8}]{reset} "
         formatted += f"{record.name:20} | "
         formatted += f"{record.getMessage()}"
-        
+
         # Add ML context if available
         if hasattr(record, "experiment_id"):
             formatted += f" [exp:{record.experiment_id}]"
@@ -81,37 +91,42 @@ class ColoredConsoleFormatter(logging.Formatter):
             formatted += f" [model:{record.model_name}]"
         if hasattr(record, "pipeline_stage"):
             formatted += f" [stage:{record.pipeline_stage}]"
-            
+
         return formatted
 
 
 def setup_logging() -> None:
     """
     Configure comprehensive logging for the ML platform.
-    
+
     Sets up:
     - Environment-appropriate formatters (JSON for prod, colored for dev)
     - File rotation and retention
     - Performance-optimized loggers
     - ML-specific log categories
     """
-    
+
     # Create logs directory
     log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
-    
+
     # Determine environment and log level
-    log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
-    
+    log_level = (
+        getattr(logging, settings.log_level.upper())
+        if hasattr(logging, settings.log_level.upper())
+        else logging.INFO
+    )
+
+    print(f"Setting log level to: {log_level}, {logging.getLevelName(log_level)}")
     # Configure logging based on environment
     if settings.environment == "production":
         _setup_production_logging(log_level, log_dir)
     else:
         _setup_development_logging(log_level, log_dir)
-    
+
     # Configure third-party library logging
     _configure_third_party_loggers()
-    
+
     # Log startup information
     logger = logging.getLogger(__name__)
     logger.info(
@@ -120,13 +135,13 @@ def setup_logging() -> None:
             "environment": settings.environment,
             "log_level": settings.log_level,
             "log_directory": str(log_dir),
-        }
+        },
     )
 
 
 def _setup_production_logging(log_level: int, log_dir: Path) -> None:
     """Configure production logging with JSON format and file rotation."""
-    
+
     config = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -136,7 +151,7 @@ def _setup_production_logging(log_level: int, log_dir: Path) -> None:
             },
             "simple": {
                 "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            }
+            },
         },
         "handlers": {
             "console": {
@@ -154,7 +169,7 @@ def _setup_production_logging(log_level: int, log_dir: Path) -> None:
                 "level": log_level,
             },
             "file_experiments": {
-                "class": "logging.handlers.RotatingFileHandler", 
+                "class": "logging.handlers.RotatingFileHandler",
                 "filename": log_dir / "experiments.log",
                 "maxBytes": 100 * 1024 * 1024,  # 100MB
                 "backupCount": 20,
@@ -163,7 +178,7 @@ def _setup_production_logging(log_level: int, log_dir: Path) -> None:
             },
             "file_data": {
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": log_dir / "data_pipeline.log", 
+                "filename": log_dir / "data_pipeline.log",
                 "maxBytes": 50 * 1024 * 1024,  # 50MB
                 "backupCount": 10,
                 "formatter": "json",
@@ -176,7 +191,7 @@ def _setup_production_logging(log_level: int, log_dir: Path) -> None:
                 "backupCount": 15,
                 "formatter": "json",
                 "level": logging.ERROR,
-            }
+            },
         },
         "loggers": {
             "src": {
@@ -203,15 +218,15 @@ def _setup_production_logging(log_level: int, log_dir: Path) -> None:
         "root": {
             "handlers": ["console", "file_errors"],
             "level": logging.WARNING,
-        }
+        },
     }
-    
+
     logging.config.dictConfig(config)
 
 
 def _setup_development_logging(log_level: int, log_dir: Path) -> None:
     """Configure development logging with colored console output."""
-    
+
     config = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -219,9 +234,7 @@ def _setup_development_logging(log_level: int, log_dir: Path) -> None:
             "colored": {
                 "()": "src.core.logging.config.ColoredConsoleFormatter",
             },
-            "file": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            }
+            "file": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"},
         },
         "handlers": {
             "console": {
@@ -236,7 +249,7 @@ def _setup_development_logging(log_level: int, log_dir: Path) -> None:
                 "mode": "w",  # Overwrite each run in development
                 "formatter": "file",
                 "level": logging.DEBUG,
-            }
+            },
         },
         "loggers": {
             "src": {
@@ -248,42 +261,42 @@ def _setup_development_logging(log_level: int, log_dir: Path) -> None:
         "root": {
             "handlers": ["console"],
             "level": logging.INFO,
-        }
+        },
     }
-    
+
     logging.config.dictConfig(config)
 
 
 def _configure_third_party_loggers() -> None:
     """Configure logging levels for third-party libraries."""
-    
+
     # Reduce noise from verbose libraries
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("requests").setLevel(logging.WARNING)
     logging.getLogger("boto3").setLevel(logging.WARNING)
     logging.getLogger("botocore").setLevel(logging.WARNING)
     logging.getLogger("snowflake").setLevel(logging.WARNING)
-    
+
     # Keep MLflow logging visible but not overwhelming
     logging.getLogger("mlflow").setLevel(logging.INFO)
-    
+
     # Panel and Bokeh can be noisy in development
     if settings.environment != "production":
         logging.getLogger("bokeh").setLevel(logging.WARNING)
         logging.getLogger("panel").setLevel(logging.INFO)
 
 
-def get_logger(name: str, **context: Any) -> logging.LoggerAdapter:
+def get_logger(name: str, **context: any) -> logging.LoggerAdapter:
     """
     Get a logger with ML-specific context.
-    
+
     Args:
         name: Logger name (typically __name__)
         **context: Additional context fields (experiment_id, model_name, etc.)
-        
+
     Returns:
         LoggerAdapter with context information
-        
+
     Example:
         logger = get_logger(__name__, experiment_id="exp_123", model_name="rf_model")
         logger.info("Training started", extra={"epoch": 1, "batch_size": 32})
@@ -292,59 +305,74 @@ def get_logger(name: str, **context: Any) -> logging.LoggerAdapter:
     return logging.LoggerAdapter(base_logger, context)
 
 
-def log_performance(func):
+def log_performance(func: callable) -> callable:
     """
     Decorator to log function performance metrics.
-    
+
     Useful for ML operations like data loading, model training, etc.
     """
-    import functools
-    import time
-    
+
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> any:  # noqa: ANN002, ANN003
+        """
+        A decorator wrapper that logs the start, completion, and failure of the decorated function.
+
+        Logs the following at each stage:
+        - Start: Logs function name, stage, and argument counts at DEBUG level.
+        - Completion: Logs function name, stage, and execution duration at INFO level.
+        - Failure: Logs function name, stage, execution duration, and error type at ERROR level, including exception traceback.
+
+        Args:
+            *args: Positional arguments passed to the decorated function.
+            **kwargs: Keyword arguments passed to the decorated function.
+
+        Returns:
+            The result of the decorated function.
+
+        Raises:
+            Propagates any exception raised by the decorated function after logging the error.
+        """
         logger = logging.getLogger(func.__module__)
         start_time = time.time()
-        
+
         logger.debug(
-            f"Starting {func.__name__}",
+            ("Starting %s", func.__name__),
             extra={
                 "function": func.__name__,
                 "pipeline_stage": "start",
                 "args_count": len(args),
-                "kwargs_count": len(kwargs)
-            }
+                "kwargs_count": len(kwargs),
+            },
         )
-        
+
         try:
             result = func(*args, **kwargs)
             duration = time.time() - start_time
-            
+
             logger.info(
-                f"Completed {func.__name__}",
+                ("Completed %s", func.__name__),
                 extra={
                     "function": func.__name__,
                     "pipeline_stage": "complete",
                     "duration_seconds": round(duration, 3),
-                    "performance_metrics": {"execution_time": duration}
-                }
+                    "performance_metrics": {"execution_time": duration},
+                },
             )
-            
-            return result
-            
+
+            return result  # noqa: TRY300
+
         except Exception as e:
             duration = time.time() - start_time
-            
-            logger.error(
-                f"Failed {func.__name__}: {e}",
+            msg = f"Failed {func.__name__}: {e!s}"
+            logger.exception(
+                msg,
                 extra={
-                    "function": func.__name__, 
+                    "function": func.__name__,
                     "pipeline_stage": "error",
                     "duration_seconds": round(duration, 3),
-                    "error_type": type(e).__name__
+                    "error_type": type(e).__name__,
                 },
-                exc_info=True
             )
             raise
-            
+
     return wrapper

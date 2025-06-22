@@ -1,8 +1,10 @@
 from pydantic_settings import BaseSettings
 
+LOCAL_HOST = "127.0.0.1"
+
 
 class Settings(BaseSettings):
-    # MLflow Configuration  
+    # MLflow Configuration
     mlflow_tracking_uri: str = "http://127.0.0.1:5000"
     mlflow_experiment_name: str = "ml-platform-experiments"
     mlflow_backend_store_uri: str = "sqlite:///mlflow_data/mlflow.db"
@@ -28,12 +30,12 @@ class Settings(BaseSettings):
     redis_db: int = 0
 
     # Application Configuration
-    app_host: str = "0.0.0.0"
+    app_host: str = "127.0.0.1"
     app_port: int = 5006
     debug: bool = True
-    
+
     # Logging Configuration
-    log_level: str = "INFO"
+    log_level: str = "DEBUG"
     environment: str = "development"
 
     class Config:
