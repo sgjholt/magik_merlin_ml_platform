@@ -1,6 +1,36 @@
 # CHANGELOG
 
 
+## v0.3.0 (2025-06-22)
+
+### Bug Fixes
+
+- Update changelog configuration for semantic release
+  ([`5a525ea`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/5a525ea8e25002dc330feacc4d6de4fbbc9e5037))
+
+### Features
+
+- Add comprehensive visualization system with interactive charts
+  ([`03ac692`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/03ac6921602a0ce264965955ca5c4a5a66d3c5f7))
+
+- Create modular visualization framework with base classes and themes - Implement data exploration
+  visualizations (dataset overview, distributions, correlation matrix, missing data analysis, time
+  series) - Add model evaluation visualizations (model comparison, ROC curves, confusion matrix,
+  feature importance, learning curves, regression analysis) - Build experiment tracking
+  visualizations (experiment history, comparison, metrics explorer, training progress) - Integrate
+  visualization panel into main application with category-based navigation - Support interactive
+  controls for dynamic chart customization - Apply consistent PlotTheme across all visualizations -
+  Include comprehensive error handling and empty state management
+
+The visualization system provides data scientists with powerful tools for exploring datasets,
+  evaluating model performance, and tracking experiment progress through interactive Plotly-based
+  charts.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+
 ## v0.2.0 (2025-06-22)
 
 ### Bug Fixes
