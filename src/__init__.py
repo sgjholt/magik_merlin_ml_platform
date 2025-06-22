@@ -5,5 +5,5 @@ A comprehensive Panel-based machine learning experimentation platform that integ
 PyCaret, MLflow, and various data sources for end-to-end ML workflows.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __author__ = "ML Platform Team"

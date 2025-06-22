@@ -1,6 +1,34 @@
 # CHANGELOG
 
 
+## v0.4.0 (2025-06-22)
+
+### Bug Fixes
+
+- Update settings and logging configuration for improved performance and clarity
+  ([`5fa1f69`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/5fa1f695717632f5344e0117bd30d22cdec2ec6e))
+
+### Features
+
+- Add ML Platform Runner Script to simplify development and operational tasks
+  ([`f1ce628`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/f1ce628a5f58022c974254f86d5ebce7e18f3c69))
+
+- Add stop command for MLflow server and improve logging throughout the script
+  ([`ad75a13`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/ad75a13e6e22f7851fddbb63585078a7825d486b))
+
+- Enhance MLflow server management with improved logging and error handling
+  ([`1d49395`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/1d4939594b3f3fe4b7ad26778854c32b6633e388))
+
+
+## v0.3.1 (2025-06-22)
+
+### Bug Fixes
+
+- Fixed server stopping routine by finding PIDs connected to running apps on address:port directly
+  and killing them.
+  ([`7ce9ee7`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/7ce9ee7fa53b079ae14a39e636b59a80f3adce6c))
+
+
 ## v0.3.0 (2025-06-22)
 
 ### Bug Fixes
