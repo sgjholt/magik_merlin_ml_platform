@@ -1,14 +1,15 @@
+import pandas as pd
 import panel as pn
 
+from ..core.experiments.tracking import ExperimentTracker
 from .panels.data_management import DataManagementPanel
 from .panels.deployment import DeploymentPanel
 from .panels.experimentation import ExperimentationPanel
 from .panels.model_evaluation import ModelEvaluationPanel
-from ..core.experiments.tracking import ExperimentTracker
 
 
 class MLPlatformApp:
-    def __init__(self):
+    def __init__(self) -> None:
         pn.extension("bokeh", "plotly", "tabulator")
 
         # Initialize experiment tracker
@@ -52,7 +53,7 @@ class MLPlatformApp:
         # Set up the main content area
         self._setup_main_content()
 
-    def _create_sidebar(self):
+    def _create_sidebar(self) -> pn.Column:
         # Core status functionality at the top
         status_section = pn.Column(
             pn.pane.Markdown("## Platform Status"),
@@ -113,7 +114,7 @@ class MLPlatformApp:
             scroll=True,
         )
 
-    def _setup_main_content(self):
+    def _setup_main_content(self) -> None:
         # Create main tabs with core functionality only
         main_tabs = pn.Tabs(
             ("📊 Data Management", self.data_panel.panel),
@@ -126,13 +127,13 @@ class MLPlatformApp:
 
         self.template.main.append(main_tabs)
 
-    def _create_session_info_markdown(self):
+    def _create_session_info_markdown(self) -> pn.pane.Markdown:
         """Create session info markdown component for overview card"""
         if self.session_info_markdown is None:
             self.session_info_markdown = pn.pane.Markdown(self._get_session_info_text())
         return self.session_info_markdown
 
-    def _get_session_info_text(self):
+    def _get_session_info_text(self) -> str:
         """Generate session info text for the overview card"""
         return f"""
         ## 📊 Current Session
@@ -145,12 +146,12 @@ class MLPlatformApp:
         • **Deployments:** {self.session_stats["deployments_active"]} active
         """
 
-    def _update_session_stats(self):
+    def _update_session_stats(self) -> None:
         """Update the session statistics display"""
         if self.session_info_markdown:
             self.session_info_markdown.object = self._get_session_info_text()
 
-    def _on_data_updated(self, data):
+    def _on_data_updated(self, data: pd.DataFrame | None) -> None:
         """Callback when data is updated in data management panel"""
         # Update experiment panel with new data
         self.experiment_panel.update_data_options(data)
@@ -169,7 +170,7 @@ class MLPlatformApp:
         # Update session display
         self._update_session_stats()
 
-    def _on_experiment_completed(self):
+    def _on_experiment_completed(self) -> None:
         """Callback when an experiment is completed"""
         self.session_stats["experiments_run"] += 1
         # Assume each experiment trains multiple models
@@ -178,7 +179,7 @@ class MLPlatformApp:
         )
         self._update_session_stats()
 
-    def serve(self, port: int = 5006, show: bool = True, autoreload: bool = True):
+    def serve(self, port: int = 5006, *, show: bool = True, autoreload: bool = True):  # type: ignore[misc]
         self.template.servable()
         return pn.serve(
             self.template,

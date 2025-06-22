@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import panel as pn
@@ -60,13 +62,13 @@ class ModelEvaluationPanel:
         # Initialize with mock data
         self._initialize_mock_data()
 
-    def _setup_callbacks(self):
+    def _setup_callbacks(self) -> None:
         self.refresh_button.on_click(self._on_refresh_models)
         self.compare_button.on_click(self._on_compare_models)
         self.viz_type_select.param.watch(self._on_viz_type_change, "value")
         self.model_select.param.watch(self._on_model_selection_change, "value")
 
-    def _create_panel(self):
+    def _create_panel(self) -> pn.Column:
         return pn.Column(
             pn.pane.Markdown("## Model Evaluation & Comparison"),
             pn.Row(
@@ -97,7 +99,7 @@ class ModelEvaluationPanel:
             ),
         )
 
-    def _initialize_mock_data(self):
+    def _initialize_mock_data(self) -> None:
         """Initialize with mock model data"""
         models = ["Random Forest", "XGBoost", "LightGBM", "Logistic Regression", "SVM"]
         self.model_select.options = models
@@ -118,12 +120,12 @@ class ModelEvaluationPanel:
 
         self.metrics_table.object = self.mock_metrics
 
-    def _on_refresh_models(self, event):
+    def _on_refresh_models(self, event: Any) -> None:  # noqa: ANN401, ARG002
         """Refresh available models from MLflow"""
         # In real implementation, this would query MLflow registry
         self._initialize_mock_data()
 
-    def _on_model_selection_change(self, event):
+    def _on_model_selection_change(self, event: Any) -> None:  # noqa: ANN401
         """Handle model selection change"""
         if event.new:
             self.compare_button.disabled = False
@@ -133,7 +135,7 @@ class ModelEvaluationPanel:
             if model_name:
                 self._update_model_details(model_name)
 
-    def _on_compare_models(self, event):
+    def _on_compare_models(self, event: Any) -> None:  # noqa: ANN401, ARG002
         """Compare selected models"""
         if not self.model_select.value:
             return
@@ -149,7 +151,7 @@ class ModelEvaluationPanel:
         # Create visualization based on selected type
         self._create_visualization(selected_data)
 
-    def _on_viz_type_change(self, event):
+    def _on_viz_type_change(self, event: Any) -> None:  # noqa: ANN401, ARG002
         """Handle visualization type change"""
         if self.model_select.value:
             selected_data = self.mock_metrics[
@@ -157,7 +159,7 @@ class ModelEvaluationPanel:
             ]
             self._create_visualization(selected_data)
 
-    def _create_visualization(self, data: pd.DataFrame):
+    def _create_visualization(self, data: pd.DataFrame) -> None:
         """Create visualization based on selected type"""
         viz_type = self.viz_type_select.value
 
@@ -173,7 +175,7 @@ class ModelEvaluationPanel:
         # Always update feature importance
         self._create_feature_importance()
 
-    def _create_performance_comparison(self, data: pd.DataFrame):
+    def _create_performance_comparison(self, data: pd.DataFrame) -> None:
         """Create performance comparison bar chart"""
         metrics = ["Accuracy", "Precision", "Recall", "F1-Score", "AUC-ROC"]
 
@@ -200,7 +202,7 @@ class ModelEvaluationPanel:
 
         self.comparison_plot.object = fig
 
-    def _create_confusion_matrix(self):
+    def _create_confusion_matrix(self) -> None:
         """Create mock confusion matrix heatmap"""
         # Mock confusion matrix data
         confusion_matrix = np.array([[85, 12], [8, 95]])
@@ -218,7 +220,7 @@ class ModelEvaluationPanel:
 
         self.comparison_plot.object = fig
 
-    def _create_roc_curve(self):
+    def _create_roc_curve(self) -> None:
         """Create mock ROC curve"""
         # Generate mock ROC curve data
         fpr = np.linspace(0, 1, 100)
@@ -267,7 +269,7 @@ class ModelEvaluationPanel:
 
         self.comparison_plot.object = fig
 
-    def _create_learning_curve(self):
+    def _create_learning_curve(self) -> None:
         """Create mock learning curve"""
         training_sizes = np.array([50, 100, 200, 500, 1000, 2000])
         train_scores = 1 - np.exp(-training_sizes / 500) * 0.3
@@ -306,7 +308,7 @@ class ModelEvaluationPanel:
 
         self.comparison_plot.object = fig
 
-    def _create_feature_importance(self):
+    def _create_feature_importance(self) -> None:
         """Create mock feature importance plot"""
         features = ["feature_1", "feature_2", "feature_3", "feature_4", "feature_5"]
         importance = [0.25, 0.22, 0.18, 0.15, 0.12]
@@ -324,7 +326,7 @@ class ModelEvaluationPanel:
 
         self.feature_importance_plot.object = fig
 
-    def _update_model_details(self, model_name: str):
+    def _update_model_details(self, model_name: str) -> None:
         """Update model details panel"""
         # Mock model details
         details = {

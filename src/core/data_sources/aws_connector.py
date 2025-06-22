@@ -9,7 +9,7 @@ from .base import DataSource, DataSourceConfig
 
 
 class AWSDataSource(DataSource):
-    def __init__(self, config: DataSourceConfig):
+    def __init__(self, config: DataSourceConfig) -> None:
         super().__init__(config)
         self.connection_params = config.connection_params
         self.s3_client = None

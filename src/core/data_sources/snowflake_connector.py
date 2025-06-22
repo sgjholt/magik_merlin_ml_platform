@@ -8,7 +8,7 @@ from .base import DataSource, DataSourceConfig
 
 
 class SnowflakeDataSource(DataSource):
-    def __init__(self, config: DataSourceConfig):
+    def __init__(self, config: DataSourceConfig) -> None:
         super().__init__(config)
         self.connection_params = config.connection_params
 

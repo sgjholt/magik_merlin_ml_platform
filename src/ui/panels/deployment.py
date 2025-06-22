@@ -171,7 +171,7 @@ class DeploymentPanel:
 
         self.deployments_table.object = deployments_data
 
-    def _on_model_select(self, event: pn.events.Event) -> None:
+    def _on_model_select(self, event: Any) -> None:
         """Handle model selection"""
         if event.new:
             self.deploy_button.disabled = False

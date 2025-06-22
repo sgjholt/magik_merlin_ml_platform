@@ -1,1 +1,1 @@
-# Test package for ML Platform
+"""Tests for ML Platform"""
