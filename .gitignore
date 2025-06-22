@@ -80,6 +80,10 @@ logs/
 # MLflow
 mlruns/
 mlartifacts/
+mlflow_data/
+experiments/metadata/
+experiments/models/
+experiments/artifacts/
 
 # Panel
 *.bokeh

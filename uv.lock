@@ -1539,6 +1539,11 @@ ml = [
     { name = "yellowbrick" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "python-semantic-release" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "azure-storage-blob", marker = "extra == 'cloud'", specifier = ">=12.19.0" },
@@ -1584,6 +1589,9 @@ requires-dist = [
     { name = "yellowbrick", marker = "extra == 'ml'", specifier = ">=1.5.0" },
 ]
 provides-extras = ["dev", "cloud", "ml"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "python-semantic-release", specifier = ">=9.21.1" }]
 
 [[package]]
 name = "mlflow"

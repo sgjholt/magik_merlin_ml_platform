@@ -220,3 +220,8 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 show_error_codes = true
 strict = true
+
+[dependency-groups]
+dev = [
+    "python-semantic-release>=9.21.1",
+]
