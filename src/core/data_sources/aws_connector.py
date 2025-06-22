@@ -5,6 +5,7 @@ import boto3
 import pandas as pd
 from botocore.exceptions import ClientError
 
+from ..logging import get_logger, log_performance
 from .base import DataSource, DataSourceConfig
 
 
@@ -14,8 +15,14 @@ class AWSDataSource(DataSource):
         self.connection_params = config.connection_params
         self.s3_client = None
         self.bucket_name = self.connection_params.get("bucket_name")
+        self.logger = get_logger(__name__, data_source="aws_s3", bucket=self.bucket_name)
 
     def connect(self) -> bool:
+        self.logger.info("Attempting to connect to AWS S3", extra={
+            "region": self.connection_params.get("region", "us-east-1"),
+            "bucket": self.bucket_name
+        })
+        
         try:
             self.s3_client = boto3.client(
                 "s3",
@@ -23,9 +30,12 @@ class AWSDataSource(DataSource):
                 aws_secret_access_key=self.connection_params.get("secret_access_key"),
                 region_name=self.connection_params.get("region", "us-east-1"),
             )
+            self.logger.info("Successfully connected to AWS S3")
             return True
         except Exception as e:
-            print(f"Failed to connect to AWS S3: {e!s}")
+            self.logger.error("Failed to connect to AWS S3", exc_info=True, extra={
+                "error_type": type(e).__name__
+            })
             return False
 
     def disconnect(self) -> None:
@@ -42,6 +52,7 @@ class AWSDataSource(DataSource):
         except ClientError:
             return False
 
+    @log_performance
     def load_data(self, s3_key: str, **kwargs) -> pd.DataFrame:
         if not self.s3_client:
             if not self.connect():

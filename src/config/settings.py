@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     app_host: str = "0.0.0.0"
     app_port: int = 5006
     debug: bool = True
+    
+    # Logging Configuration
+    log_level: str = "INFO"
+    environment: str = "development"
 
     class Config:
         env_file = ".env"

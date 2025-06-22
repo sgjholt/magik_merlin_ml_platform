@@ -6,6 +6,8 @@ from typing import Any
 
 import pandas as pd
 
+from ..logging import get_logger, log_performance
+
 try:
     from pycaret.anomaly import AnomalyExperiment
     from pycaret.classification import ClassificationExperiment
@@ -41,6 +43,7 @@ class PyCaretPipeline:
         self.experiment_tracker = experiment_tracker
         self.is_setup = False
         self.best_model = None
+        self.logger = get_logger(__name__, pipeline_stage="pycaret", task_type=self.task_type)
 
         # Initialize appropriate experiment class
         if self.task_type == "classification":
@@ -339,7 +342,10 @@ class AutoMLWorkflow:
                     tuned = self.pipeline.tune_hyperparameters(model)
                     tuned_models.append(tuned)
                 except Exception as e:
-                    print(f"Failed to tune model: {e}")
+                    self.logger.error("Failed to tune model", exc_info=True, extra={
+                        "model_name": str(model),
+                        "error_type": type(e).__name__
+                    })
                     tuned_models.append(model)
             best_models = tuned_models
 
@@ -350,7 +356,10 @@ class AutoMLWorkflow:
                 eval_result = self.pipeline.evaluate_model(model)
                 evaluations.append(eval_result)
             except Exception as e:
-                print(f"Failed to evaluate model: {e}")
+                self.logger.error("Failed to evaluate model", exc_info=True, extra={
+                    "model_name": str(model),
+                    "error_type": type(e).__name__
+                })
 
         # Finalize best model
         final_model = None
