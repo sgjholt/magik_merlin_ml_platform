@@ -1,7 +1,10 @@
+import subprocess
+import threading
 import pandas as pd
 import panel as pn
 
 from ..core.experiments.tracking import ExperimentTracker
+from ..core.logging import get_logger
 from .panels.data_management import DataManagementPanel
 from .panels.deployment import DeploymentPanel
 from .panels.experimentation import ExperimentationPanel
@@ -31,6 +34,33 @@ class MLPlatformApp:
         self.data_status_indicator = pn.pane.HTML(
             "<span style='color: gray;'>●</span> No Data Loaded"
         )
+        
+        # MLflow status indicator
+        self.mlflow_status_indicator = pn.pane.HTML(
+            "<span style='color: orange;'>●</span> MLflow (Not Connected)"
+        )
+        
+        # MLflow control buttons
+        self.start_mlflow_button = pn.widgets.Button(
+            name="🚀 Start MLflow", button_type="success", width=100
+        )
+        self.stop_mlflow_button = pn.widgets.Button(
+            name="🛑 Stop MLflow", button_type="danger", width=100, disabled=True
+        )
+        self.mlflow_ui_button = pn.widgets.Button(
+            name="📊 MLflow UI", button_type="primary", width=100, disabled=True
+        )
+        
+        # Set up MLflow button callbacks
+        self.start_mlflow_button.on_click(self._on_start_mlflow)
+        self.stop_mlflow_button.on_click(self._on_stop_mlflow)
+        self.mlflow_ui_button.on_click(self._on_open_mlflow_ui)
+        
+        # Logger
+        self.logger = get_logger(__name__, pipeline_stage="ui_app")
+        
+        # Update initial MLflow status
+        self._update_mlflow_status()
 
         # Session tracking
         self.session_stats = {
@@ -59,11 +89,14 @@ class MLPlatformApp:
             pn.pane.Markdown("## Platform Status"),
             pn.pane.HTML("<hr>"),
             pn.pane.Markdown("**Experiment Tracker:**"),
-            pn.pane.HTML(
-                "<span style='color: orange;'>●</span> MLflow (Not Connected)"
-                if not self.experiment_tracker.is_active()
-                else "<span style='color: green;'>●</span> MLflow Connected"
+            self.mlflow_status_indicator,
+            pn.Row(
+                self.start_mlflow_button,
+                self.stop_mlflow_button,
+                sizing_mode="stretch_width"
             ),
+            self.mlflow_ui_button,
+            pn.pane.HTML("<hr>"),
             pn.pane.Markdown("**Data Sources:**"),
             self.data_status_indicator,
             pn.pane.HTML("<hr>"),
@@ -188,3 +221,77 @@ class MLPlatformApp:
             autoreload=autoreload,
             allow_websocket_origin=[f"localhost:{port}"],
         )
+        
+    def _update_mlflow_status(self) -> None:
+        """Update MLflow status indicator and buttons"""
+        is_available = self.experiment_tracker.is_server_available()
+        
+        if is_available:
+            self.mlflow_status_indicator.object = (
+                "<span style='color: green;'>●</span> MLflow Connected"
+            )
+            self.start_mlflow_button.disabled = True
+            self.stop_mlflow_button.disabled = False
+            self.mlflow_ui_button.disabled = False
+        else:
+            self.mlflow_status_indicator.object = (
+                "<span style='color: orange;'>●</span> MLflow (Not Connected)"
+            )
+            self.start_mlflow_button.disabled = False
+            self.stop_mlflow_button.disabled = True
+            self.mlflow_ui_button.disabled = True
+            
+    def _on_start_mlflow(self, event) -> None:
+        """Start MLflow server"""
+        self.logger.info("Starting MLflow server from UI")
+        
+        def start_server():
+            try:
+                # Start MLflow server in background
+                process = subprocess.Popen(
+                    ["python", "scripts/start_mlflow.py", "start"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+                
+                # Wait a moment for startup
+                import time
+                time.sleep(3)
+                
+                # Check if it started successfully
+                if self.experiment_tracker.reconnect():
+                    self.logger.info("MLflow server started successfully")
+                    self._update_mlflow_status()
+                else:
+                    self.logger.error("Failed to start MLflow server")
+                    
+            except Exception as e:
+                self.logger.error(f"Error starting MLflow server: {e}")
+        
+        # Start in background thread to avoid blocking UI
+        threading.Thread(target=start_server, daemon=True).start()
+        
+    def _on_stop_mlflow(self, event) -> None:
+        """Stop MLflow server"""
+        self.logger.info("Stopping MLflow server from UI")
+        
+        try:
+            # Stop MLflow server
+            subprocess.run(["./scripts/mlflow.sh", "stop"], capture_output=True)
+            
+            # Update status
+            self._update_mlflow_status()
+            self.logger.info("MLflow server stopped")
+            
+        except Exception as e:
+            self.logger.error(f"Error stopping MLflow server: {e}")
+            
+    def _on_open_mlflow_ui(self, event) -> None:
+        """Open MLflow UI in browser"""
+        self.logger.info("Opening MLflow UI")
+        
+        try:
+            import webbrowser
+            webbrowser.open(self.experiment_tracker.tracking_uri)
+        except Exception as e:
+            self.logger.error(f"Failed to open MLflow UI: {e}")

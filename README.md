@@ -20,33 +20,36 @@ A comprehensive Panel-based machine learning experimentation platform that integ
 
 ### 1. Environment Setup
 ```bash
-# Create virtual environment
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# Install dependencies with uv
+uv sync --extra dev
 
-# Install core dependencies
-make install
+# Setup platform (creates directories, starts MLflow)
+python setup_platform.py setup
 ```
 
-### 2. Configuration
+### 2. Start the Platform
 ```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit .env with your settings (optional)
-```
-
-### 3. Run Application
-```bash
-# Start the platform
-make run
-
-# Or directly
+# Start ML Platform (includes MLflow controls in UI)
 python main.py
+
+# Platform will be available at: http://localhost:5006
 ```
 
-### 4. Access Interface
-Open your browser to `http://localhost:5006`
+### 3. MLflow Server Management
+
+**From UI (Recommended):**
+- Use the **🚀 Start MLflow** / **🛑 Stop MLflow** buttons in the sidebar
+- Click **📊 MLflow UI** to open the tracking interface
+- Status indicator shows real-time connection status
+
+**From Command Line:**
+```bash
+./scripts/mlflow.sh start     # Start MLflow server
+./scripts/mlflow.sh status    # Check server status
+./scripts/mlflow.sh stop      # Stop server  
+./scripts/mlflow.sh ui        # Open web interface
+./scripts/mlflow.sh restart   # Restart server
+```
 
 ## 📁 Project Structure
 
