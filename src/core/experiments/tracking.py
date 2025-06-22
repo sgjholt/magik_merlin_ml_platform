@@ -3,7 +3,10 @@ Experiment tracking integration with MLflow
 """
 
 import logging
+import time
 from typing import Any
+
+import requests
 
 try:
     import mlflow
@@ -21,30 +24,66 @@ class ExperimentTracker:
     def __init__(
         self, tracking_uri: str | None = None, experiment_name: str | None = None
     ):
-        self.tracking_uri = tracking_uri or "http://localhost:5000"
-        self.experiment_name = experiment_name or "ml-platform-experiments"
+        # Import here to avoid circular imports
+        from ...config.settings import settings
+        
+        self.tracking_uri = tracking_uri or settings.mlflow_tracking_uri
+        self.experiment_name = experiment_name or settings.mlflow_experiment_name
         self.active_run = None
         self.logger = logging.getLogger(__name__)
+        self._server_available = False
 
         if MLFLOW_AVAILABLE:
-            try:
-                mlflow.set_tracking_uri(self.tracking_uri)
-                mlflow.set_experiment(self.experiment_name)
-            except Exception as e:
-                self.logger.warning(f"Failed to setup MLflow: {e}")
+            self._check_and_setup_mlflow()
         else:
             self.logger.warning("MLflow not available - experiment tracking disabled")
+            
+    def _check_mlflow_server(self, timeout: int = 5) -> bool:
+        """Check if MLflow server is accessible"""
+        try:
+            # Just check if the root endpoint returns the MLflow UI
+            response = requests.get(self.tracking_uri, timeout=timeout)
+            return response.status_code == 200 and 'MLflow' in response.text
+        except requests.exceptions.RequestException:
+            return False
+            
+    def _check_and_setup_mlflow(self) -> None:
+        """Check MLflow server availability and setup connection"""
+        try:
+            # First check if server is running
+            if self._check_mlflow_server():
+                mlflow.set_tracking_uri(self.tracking_uri)
+                mlflow.set_experiment(self.experiment_name)
+                self._server_available = True
+                self.logger.info(f"MLflow tracking configured: {self.tracking_uri}")
+            else:
+                self.logger.warning(
+                    f"MLflow server not accessible at {self.tracking_uri}. "
+                    "Start it with: ./scripts/mlflow.sh start"
+                )
+                self._server_available = False
+        except Exception as e:
+            self.logger.warning(f"Failed to setup MLflow: {e}")
+            self._server_available = False
 
     def start_run(self, run_name: str | None = None) -> bool:
         """Start a new MLflow run"""
-        if not MLFLOW_AVAILABLE:
+        if not MLFLOW_AVAILABLE or not self._server_available:
             return False
 
         try:
+            # Double-check server is still available
+            if not self._check_mlflow_server():
+                self.logger.warning("MLflow server not available when starting run")
+                self._server_available = False
+                return False
+                
             self.active_run = mlflow.start_run(run_name=run_name)
+            self.logger.info(f"Started MLflow run: {self.active_run.info.run_id}")
             return True
         except Exception as e:
             self.logger.error(f"Failed to start MLflow run: {e}")
+            self._server_available = False
             return False
 
     def end_run(self) -> None:
@@ -106,4 +145,15 @@ class ExperimentTracker:
 
     def is_active(self) -> bool:
         """Check if tracking is active"""
-        return MLFLOW_AVAILABLE and self.active_run is not None
+        return MLFLOW_AVAILABLE and self._server_available and self.active_run is not None
+        
+    def is_server_available(self) -> bool:
+        """Check if MLflow server is available"""
+        return MLFLOW_AVAILABLE and self._server_available
+        
+    def reconnect(self) -> bool:
+        """Attempt to reconnect to MLflow server"""
+        if MLFLOW_AVAILABLE:
+            self._check_and_setup_mlflow()
+            return self._server_available
+        return False

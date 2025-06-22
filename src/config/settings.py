@@ -2,9 +2,11 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # MLflow Configuration
-    mlflow_tracking_uri: str = "http://localhost:5000"
+    # MLflow Configuration  
+    mlflow_tracking_uri: str = "http://127.0.0.1:5000"
     mlflow_experiment_name: str = "ml-platform-experiments"
+    mlflow_backend_store_uri: str = "sqlite:///mlflow_data/mlflow.db"
+    mlflow_artifact_root: str = "./mlflow_data/artifacts"
 
     # Data Source Configurations
     snowflake_user: str | None = None
