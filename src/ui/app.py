@@ -1,15 +1,23 @@
 import subprocess
+import sys
 import threading
+import time
+import webbrowser
+from pathlib import Path
+
 import pandas as pd
 import panel as pn
 
-from ..core.experiments.tracking import ExperimentTracker
-from ..core.logging import get_logger
+from src.core.experiments.tracking import ExperimentTracker
+from src.core.logging import get_logger
+
 from .panels.data_management import DataManagementPanel
 from .panels.deployment import DeploymentPanel
 from .panels.experimentation import ExperimentationPanel
 from .panels.model_evaluation import ModelEvaluationPanel
 from .panels.visualization import VisualizationPanel
+
+REPO_ROOT = Path(__file__).parent.parent.parent
 
 
 class MLPlatformApp:
@@ -24,7 +32,9 @@ class MLPlatformApp:
         self.experiment_panel = ExperimentationPanel(self.experiment_tracker)
         self.evaluation_panel = ModelEvaluationPanel()
         self.deployment_panel = DeploymentPanel()
-        self.visualization_panel = VisualizationPanel(self.experiment_panel.experiment_manager)
+        self.visualization_panel = VisualizationPanel(
+            self.experiment_panel.experiment_manager
+        )
 
         # Set up data flow between panels
         self.data_panel.data_updated_callback = self._on_data_updated
@@ -36,12 +46,12 @@ class MLPlatformApp:
         self.data_status_indicator = pn.pane.HTML(
             "<span style='color: gray;'>●</span> No Data Loaded"
         )
-        
+
         # MLflow status indicator
         self.mlflow_status_indicator = pn.pane.HTML(
             "<span style='color: orange;'>●</span> MLflow (Not Connected)"
         )
-        
+
         # MLflow control buttons
         self.start_mlflow_button = pn.widgets.Button(
             name="🚀 Start MLflow", button_type="success", width=100
@@ -52,15 +62,15 @@ class MLPlatformApp:
         self.mlflow_ui_button = pn.widgets.Button(
             name="📊 MLflow UI", button_type="primary", width=100, disabled=True
         )
-        
+
         # Set up MLflow button callbacks
         self.start_mlflow_button.on_click(self._on_start_mlflow)
         self.stop_mlflow_button.on_click(self._on_stop_mlflow)
         self.mlflow_ui_button.on_click(self._on_open_mlflow_ui)
-        
+
         # Logger
         self.logger = get_logger(__name__, pipeline_stage="ui_app")
-        
+
         # Update initial MLflow status
         self._update_mlflow_status()
 
@@ -95,7 +105,7 @@ class MLPlatformApp:
             pn.Row(
                 self.start_mlflow_button,
                 self.stop_mlflow_button,
-                sizing_mode="stretch_width"
+                sizing_mode="stretch_width",
             ),
             self.mlflow_ui_button,
             pn.pane.HTML("<hr>"),
@@ -109,26 +119,28 @@ class MLPlatformApp:
 
         # Create comprehensive platform overview in single collapsible card
         overview_content = pn.Column(
-            pn.pane.Markdown("""
+            pn.pane.Markdown(
+                """
             ## 🚀 Getting Started
-            
+
             **Step-by-step workflow:**
-            
+
             1. **📊 Data Management** - Connect and load data
-            2. **🔬 Experimentation** - Run ML experiments  
+            2. **🔬 Experimentation** - Run ML experiments
             3. **📈 Model Evaluation** - Compare results
             4. **🚀 Deployment** - Deploy best models
-            
+
             ## 🔧 Key Features
-            
+
             **Core capabilities:**
-            
+
             • **PyCaret Integration** - Automated ML workflows
-            • **MLflow Tracking** - Experiment management  
+            • **MLflow Tracking** - Experiment management and versioning
             • **Multiple Data Sources** - Files, cloud, databases
             • **Interactive Visualizations** - Rich charts
             • **Production Deployment** - Model serving
-            """),
+            """
+            ),
             self._create_session_info_markdown(),
             margin=(5, 5),
         )
@@ -173,9 +185,9 @@ class MLPlatformApp:
         """Generate session info text for the overview card"""
         return f"""
         ## 📊 Current Session
-        
+
         **Session Statistics:**
-        
+
         • **Active Experiments:** {self.session_stats["experiments_run"]}
         • **Models Trained:** {self.session_stats["models_trained"]}
         • **Data Sources:** {self.session_stats["data_sources_connected"]} connected
@@ -191,7 +203,7 @@ class MLPlatformApp:
         """Callback when data is updated in data management panel"""
         # Update experiment panel with new data
         self.experiment_panel.update_data_options(data)
-        
+
         # Update visualization panel with new data
         self.visualization_panel.update_data(data)
 
@@ -213,12 +225,18 @@ class MLPlatformApp:
         """Callback when an experiment is completed"""
         self.session_stats["experiments_run"] += 1
         # Assume each experiment trains multiple models
-        self.session_stats["models_trained"] += (
-            3  # Average number of models per experiment
-        )
+        self.session_stats[
+            "models_trained"
+        ] += 3  # Average number of models per experiment
         self._update_session_stats()
 
-    def serve(self, port: int = 5006, *, show: bool = True, autoreload: bool = True):  # type: ignore[misc]
+    def serve(  # noqa: ANN201
+        self,
+        port: int = 5006,
+        *,
+        show: bool = True,
+        autoreload: bool = True,
+    ):
         self.template.servable()
         return pn.serve(
             self.template,
@@ -227,11 +245,11 @@ class MLPlatformApp:
             autoreload=autoreload,
             allow_websocket_origin=[f"localhost:{port}"],
         )
-        
+
     def _update_mlflow_status(self) -> None:
         """Update MLflow status indicator and buttons"""
         is_available = self.experiment_tracker.is_server_available()
-        
+
         if is_available:
             self.mlflow_status_indicator.object = (
                 "<span style='color: green;'>●</span> MLflow Connected"
@@ -246,58 +264,74 @@ class MLPlatformApp:
             self.start_mlflow_button.disabled = False
             self.stop_mlflow_button.disabled = True
             self.mlflow_ui_button.disabled = True
-            
-    def _on_start_mlflow(self, event) -> None:
+
+    def _on_start_mlflow(self, event: any) -> None:  # noqa: ARG002
         """Start MLflow server"""
         self.logger.info("Starting MLflow server from UI")
-        
-        def start_server():
+
+        def start_server() -> None:
             try:
+                mlflow_script = REPO_ROOT / "scripts" / "start_mlflow.py"
+                if not mlflow_script.exists():
+                    msg = f"MLflow script not found at {mlflow_script.absolute().as_posix()}"
+                    self.logger.error(msg)
+                    return
+                mlflow_script_path = mlflow_script.as_posix()
                 # Start MLflow server in background
-                process = subprocess.Popen(
-                    ["python", "scripts/start_mlflow.py", "start"],
+                result = subprocess.Popen(  # noqa: S603
+                    [sys.executable, mlflow_script_path, "start"],
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
+                    stderr=subprocess.PIPE,
                 )
-                
+                # Capture output
+                result_msg = f"MLflow server started with PID {result.pid} (stdout: {result.stdout}, stderr: {result.stderr})"
+                self.logger.info(result_msg)
+
+                self.logger.info("Waiting for MLflow server to start...")
                 # Wait a moment for startup
-                import time
-                time.sleep(3)
-                
+                time.sleep(5)
+
                 # Check if it started successfully
                 if self.experiment_tracker.reconnect():
                     self.logger.info("MLflow server started successfully")
                     self._update_mlflow_status()
                 else:
                     self.logger.error("Failed to start MLflow server")
-                    
+
             except Exception as e:
-                self.logger.error(f"Error starting MLflow server: {e}")
-        
+                msg = f"Error starting MLflow server: {e!s}"
+                self.logger.exception(msg)
+
         # Start in background thread to avoid blocking UI
         threading.Thread(target=start_server, daemon=True).start()
-        
-    def _on_stop_mlflow(self, event) -> None:
+
+    def _on_stop_mlflow(self, event: any) -> None:  # noqa: ARG002
         """Stop MLflow server"""
         self.logger.info("Stopping MLflow server from UI")
-        
+
         try:
             # Stop MLflow server
-            subprocess.run(["./scripts/mlflow.sh", "stop"], capture_output=True)
-            
+            subprocess.run(
+                ["./scripts/mlflow.sh", "stop"], check=True, capture_output=True
+            )
+
             # Update status
             self._update_mlflow_status()
             self.logger.info("MLflow server stopped")
-            
+
         except Exception as e:
-            self.logger.error(f"Error stopping MLflow server: {e}")
-            
-    def _on_open_mlflow_ui(self, event) -> None:
+            msg = f"Error stopping MLflow server: {e!s}"
+            self.logger.exception(msg)
+
+    def _on_open_mlflow_ui(self, event: any) -> None:  # noqa: ARG002
         """Open MLflow UI in browser"""
         self.logger.info("Opening MLflow UI")
-        
+
         try:
-            import webbrowser
             webbrowser.open(self.experiment_tracker.tracking_uri)
         except Exception as e:
-            self.logger.error(f"Failed to open MLflow UI: {e}")
+            msg = f"Error opening MLflow UI: {e!s}"
+            self.logger.exception(msg)
+            pn.state.notifications.error(
+                "Failed to open MLflow UI. Please check the console for details."
+            )
