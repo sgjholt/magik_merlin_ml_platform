@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ml-platform"
-version = "0.1.0"
+dynamic = ["version"]
 description = "A comprehensive Panel-based ML experimentation platform"
 authors = [{ name = "ML Platform Team" }]
 license = { text = "MIT" }
@@ -40,6 +40,7 @@ dev = [
     "pytest-asyncio>=0.21.0",
     "sphinx>=6.0.0",
     "sphinx-rtd-theme>=1.2.0",
+    "python-semantic-release>=8.0.0",
 ]
 
 # Optional cloud and ML dependencies
@@ -157,13 +158,60 @@ line-ending = "auto"
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
-section-order = [
-    "future",
-    "standard-library",
-    "third-party",
-    "first-party",
-    "local-folder",
+
+# Automated Versioning with Python Semantic Release
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+version_variables = [
+    "src/__init__.py:__version__",
 ]
+build_command = "uv build"
+dist_path = "dist/"
+upload_to_pypi = false
+upload_to_release = true
+remove_dist = false
+major_on_zero = true
+commit_message = "🚀 Release v{version}"
+
+[tool.semantic_release.branches.main]
+match = "(main|master)"
+prerelease_token = "rc"
+prerelease = false
+
+[tool.semantic_release.changelog]
+template_dir = "templates"
+changelog_file = "CHANGELOG.md"
+exclude_commit_patterns = [
+    "^build:",
+    "^chore:",
+    "^ci:",
+    "^docs:",
+    "^style:",
+    "^refactor:",
+    "^test:",
+]
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = [
+    "build",
+    "chore", 
+    "ci",
+    "docs",
+    "feat",
+    "fix",
+    "perf",
+    "style",
+    "refactor",
+    "test",
+]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]
+
+# Alternative: setuptools-scm for Git-based versioning
+[tool.setuptools_scm]
+write_to = "src/_version.py"
+version_scheme = "python-simplified-semver"
+local_scheme = "node-and-date"
 
 [tool.mypy]
 python_version = "3.12"

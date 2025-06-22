@@ -2,8 +2,8 @@
 Experiment tracking integration with MLflow
 """
 
-from typing import Any, Dict, Optional
 import logging
+from typing import Any
 
 try:
     import mlflow
@@ -19,7 +19,7 @@ class ExperimentTracker:
     """MLflow-based experiment tracking"""
 
     def __init__(
-        self, tracking_uri: Optional[str] = None, experiment_name: Optional[str] = None
+        self, tracking_uri: str | None = None, experiment_name: str | None = None
     ):
         self.tracking_uri = tracking_uri or "http://localhost:5000"
         self.experiment_name = experiment_name or "ml-platform-experiments"
@@ -35,7 +35,7 @@ class ExperimentTracker:
         else:
             self.logger.warning("MLflow not available - experiment tracking disabled")
 
-    def start_run(self, run_name: Optional[str] = None) -> bool:
+    def start_run(self, run_name: str | None = None) -> bool:
         """Start a new MLflow run"""
         if not MLFLOW_AVAILABLE:
             return False
@@ -56,7 +56,7 @@ class ExperimentTracker:
             except Exception as e:
                 self.logger.error(f"Failed to end MLflow run: {e}")
 
-    def log_params(self, params: Dict[str, Any]) -> None:
+    def log_params(self, params: dict[str, Any]) -> None:
         """Log parameters to MLflow"""
         if not MLFLOW_AVAILABLE or not self.active_run:
             return
@@ -67,7 +67,7 @@ class ExperimentTracker:
         except Exception as e:
             self.logger.error(f"Failed to log parameters: {e}")
 
-    def log_metrics(self, metrics: Dict[str, Any]) -> None:
+    def log_metrics(self, metrics: dict[str, Any]) -> None:
         """Log metrics to MLflow"""
         if not MLFLOW_AVAILABLE or not self.active_run:
             return

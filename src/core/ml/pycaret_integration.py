@@ -2,15 +2,15 @@
 PyCaret integration for automated ML workflows
 """
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import pandas as pd
 
 try:
-    from pycaret.classification import ClassificationExperiment
-    from pycaret.regression import RegressionExperiment
-    from pycaret.clustering import ClusteringExperiment
     from pycaret.anomaly import AnomalyExperiment
+    from pycaret.classification import ClassificationExperiment
+    from pycaret.clustering import ClusteringExperiment
+    from pycaret.regression import RegressionExperiment
     from pycaret.time_series import TSForecastingExperiment
 
     PYCARET_AVAILABLE = True
@@ -29,7 +29,7 @@ class PyCaretPipeline:
     """PyCaret ML pipeline wrapper"""
 
     def __init__(
-        self, task_type: str, experiment_tracker: Optional[ExperimentTracker] = None
+        self, task_type: str, experiment_tracker: ExperimentTracker | None = None
     ):
         if not PYCARET_AVAILABLE:
             raise ImportError(
@@ -59,8 +59,8 @@ class PyCaretPipeline:
     def setup(
         self,
         data: pd.DataFrame,
-        target: Optional[str] = None,
-        test_data: Optional[pd.DataFrame] = None,
+        target: str | None = None,
+        test_data: pd.DataFrame | None = None,
         **kwargs,
     ) -> None:
         """Setup PyCaret experiment"""
@@ -89,12 +89,12 @@ class PyCaretPipeline:
                 )
 
         except Exception as e:
-            raise RuntimeError(f"Failed to setup PyCaret experiment: {str(e)}")
+            raise RuntimeError(f"Failed to setup PyCaret experiment: {e!s}")
 
     def compare_models(
         self,
-        include: Optional[List[str]] = None,
-        exclude: Optional[List[str]] = None,
+        include: list[str] | None = None,
+        exclude: list[str] | None = None,
         n_select: int = 1,
         **kwargs,
     ) -> pd.DataFrame:
@@ -118,7 +118,7 @@ class PyCaretPipeline:
             return results
 
         except Exception as e:
-            raise RuntimeError(f"Failed to compare models: {str(e)}")
+            raise RuntimeError(f"Failed to compare models: {e!s}")
 
     def create_model(self, model_name: str, **kwargs) -> Any:
         """Create and train a specific model"""
@@ -136,7 +136,7 @@ class PyCaretPipeline:
             return model
 
         except Exception as e:
-            raise RuntimeError(f"Failed to create model {model_name}: {str(e)}")
+            raise RuntimeError(f"Failed to create model {model_name}: {e!s}")
 
     def tune_hyperparameters(
         self, model: Any, n_iter: int = 10, optimize: str = "Accuracy", **kwargs
@@ -158,9 +158,9 @@ class PyCaretPipeline:
             return tuned_model
 
         except Exception as e:
-            raise RuntimeError(f"Failed to tune hyperparameters: {str(e)}")
+            raise RuntimeError(f"Failed to tune hyperparameters: {e!s}")
 
-    def evaluate_model(self, model: Any) -> Dict[str, Any]:
+    def evaluate_model(self, model: Any) -> dict[str, Any]:
         """Evaluate model performance"""
         if not self.is_setup:
             raise RuntimeError("Must call setup() before evaluation")
@@ -186,7 +186,7 @@ class PyCaretPipeline:
             return evaluation_results
 
         except Exception as e:
-            raise RuntimeError(f"Failed to evaluate model: {str(e)}")
+            raise RuntimeError(f"Failed to evaluate model: {e!s}")
 
     def finalize_model(self, model: Any) -> Any:
         """Finalize model (train on full dataset)"""
@@ -203,10 +203,10 @@ class PyCaretPipeline:
             return final_model
 
         except Exception as e:
-            raise RuntimeError(f"Failed to finalize model: {str(e)}")
+            raise RuntimeError(f"Failed to finalize model: {e!s}")
 
     def predict_model(
-        self, model: Any, data: Optional[pd.DataFrame] = None
+        self, model: Any, data: pd.DataFrame | None = None
     ) -> pd.DataFrame:
         """Make predictions with model"""
         if not self.is_setup:
@@ -221,7 +221,7 @@ class PyCaretPipeline:
             return predictions
 
         except Exception as e:
-            raise RuntimeError(f"Failed to make predictions: {str(e)}")
+            raise RuntimeError(f"Failed to make predictions: {e!s}")
 
     def interpret_model(self, model: Any, plot_type: str = "summary") -> Any:
         """Generate model interpretations"""
@@ -241,9 +241,9 @@ class PyCaretPipeline:
             return interpretation
 
         except Exception as e:
-            raise RuntimeError(f"Failed to interpret model: {str(e)}")
+            raise RuntimeError(f"Failed to interpret model: {e!s}")
 
-    def get_available_models(self) -> List[str]:
+    def get_available_models(self) -> list[str]:
         """Get list of available models for current task type"""
         if not self.is_setup:
             return []
@@ -255,13 +255,13 @@ class PyCaretPipeline:
             # Return common models as fallback
             if self.task_type == "classification":
                 return ["rf", "lr", "xgboost", "lightgbm", "dt", "nb", "svm"]
-            elif self.task_type == "regression":
+            if self.task_type == "regression":
                 return ["rf", "lr", "xgboost", "lightgbm", "dt", "ridge", "lasso"]
-            elif self.task_type == "clustering":
+            if self.task_type == "clustering":
                 return ["kmeans", "ap", "meanshift", "sc", "hclust", "dbscan"]
             return []
 
-    def get_model_info(self, model_name: str) -> Dict[str, Any]:
+    def get_model_info(self, model_name: str) -> dict[str, Any]:
         """Get information about a specific model"""
         try:
             if hasattr(self.experiment, "models") and callable(self.experiment.models):
@@ -280,7 +280,7 @@ class PyCaretPipeline:
         try:
             self.experiment.save_experiment(path)
         except Exception as e:
-            raise RuntimeError(f"Failed to save experiment: {str(e)}")
+            raise RuntimeError(f"Failed to save experiment: {e!s}")
 
     def load_experiment(self, path: str) -> None:
         """Load a saved experiment"""
@@ -288,13 +288,13 @@ class PyCaretPipeline:
             self.experiment.load_experiment(path)
             self.is_setup = True
         except Exception as e:
-            raise RuntimeError(f"Failed to load experiment: {str(e)}")
+            raise RuntimeError(f"Failed to load experiment: {e!s}")
 
 
 class AutoMLWorkflow:
     """Automated ML workflow using PyCaret"""
 
-    def __init__(self, experiment_tracker: Optional[ExperimentTracker] = None):
+    def __init__(self, experiment_tracker: ExperimentTracker | None = None):
         if not PYCARET_AVAILABLE:
             raise ImportError(
                 "PyCaret is not installed. Please install it with: uv add pycaret"
@@ -308,12 +308,12 @@ class AutoMLWorkflow:
         self,
         data: pd.DataFrame,
         task_type: str,
-        target: Optional[str] = None,
-        test_data: Optional[pd.DataFrame] = None,
+        target: str | None = None,
+        test_data: pd.DataFrame | None = None,
         model_selection: str = "compare_all",
         tune_hyperparameters: bool = True,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run complete AutoML workflow"""
 
         self.pipeline = PyCaretPipeline(task_type, self.experiment_tracker)
@@ -373,8 +373,8 @@ class AutoMLWorkflow:
         return self.results
 
     def get_predictions(
-        self, data: Optional[pd.DataFrame] = None
-    ) -> Optional[pd.DataFrame]:
+        self, data: pd.DataFrame | None = None
+    ) -> pd.DataFrame | None:
         """Get predictions from the final model"""
         if not self.results.get("final_model") or not self.pipeline:
             return None

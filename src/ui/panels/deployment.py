@@ -256,7 +256,7 @@ class DeploymentPanel:
 
         self._log_message("Undeployment completed")
 
-    def _on_test_endpoint(self, even: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_test_endpoint(self, event: Any) -> None:  # noqa: ANN401, ARG002
         """Test the deployed endpoint"""
         self._log_message("Testing endpoint...")
 
@@ -309,7 +309,7 @@ class DeploymentPanel:
     def _log_message(self, message: str) -> None:
         """Add message to deployment log"""
 
-        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        timestamp = datetime.now().strftime("%H:%M:%S")
         log_entry = f"[{timestamp}] {message}<br>"
 
         current_log = self.deployment_logs.object
