@@ -2,7 +2,7 @@
 # MLflow Server Management Script
 
 set -e
-
+LOCALHOST=127.0.0.1
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
@@ -17,7 +17,13 @@ case "$1" in
         ;;
     stop)
         echo "🛑 Stopping MLflow server..."
-        pkill -f "mlflow server" || echo "No MLflow server processes found"
+        MLFLOW_PORT=$(grep -o 'mlflow_tracking_uri.*localhost:[0-9]*' src/config/settings.py | grep -o '[0-9]*' || echo "5000")
+        ps -A | grep gunicorn | grep ${LOCALHOST}:${MLFLOW_PORT} | cut -d' ' -f1 | xargs kill
+        if `ps -A | grep gunicorn | grep ${LOCALHOST}:${MLFLOW_PORT}` ; then
+            echo "Failed to stop MLflow server"
+            exit 1
+        fi
+        echo "🛑 MLflow server stopped successfully 🛑"
         ;;
     restart)
         echo "🔄 Restarting MLflow server..."
