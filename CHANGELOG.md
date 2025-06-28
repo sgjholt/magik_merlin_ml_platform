@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.5.1 (2025-06-28)
+
+### Bug Fixes
+
+- Fix linting errors in claude markdown
+  ([`d758a95`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/d758a959cbe5a58a16bb009289699717caf7469f))
+
+
 ## v0.5.0 (2025-06-28)
 
 ### Features
