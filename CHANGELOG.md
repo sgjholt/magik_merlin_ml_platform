@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.5.0 (2025-06-28)
+
+### Features
+
+- Add CLAUDE.md for development guidance and command reference
+  ([`71c5c63`](https://github.com/sgjholt/magik_merlin_ml_platform/commit/71c5c639e2d0b8efbfdd05bc9404265396a4ea63))
+
+
 ## v0.4.0 (2025-06-22)
 
 ### Bug Fixes
