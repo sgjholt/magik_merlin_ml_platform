@@ -1,27 +1,35 @@
 # ML Experimentation Platform
 
-A comprehensive Panel-based machine learning experimentation platform that integrates PyCaret, MLflow, and various data sources for end-to-end ML workflows.
+A comprehensive Panel-based machine learning experimentation platform with a custom ML engine, MLflow integration, and support for multiple data sources. Built for Python 3.13+ with modern gradient boosting libraries (XGBoost, LightGBM, CatBoost) and deep learning frameworks.
 
 ## 🚀 Features
 
 - 📊 **Data Management**: Connect to multiple data sources (Local files, Snowflake, AWS S3)
-- 🔬 **ML Experimentation**: Automated ML workflows with PyCaret integration  
+- 🔬 **ML Experimentation**: Custom ML engine with XGBoost, LightGBM, and CatBoost
+- 🤖 **AutoML Pipeline**: Automated model comparison and hyperparameter optimization (Optuna)
 - 📈 **Experiment Tracking**: Complete experiment lifecycle management with MLflow
-- 🎯 **Model Evaluation**: Comprehensive model comparison and visualization
-- 🚀 **Model Deployment**: Deploy and monitor models in production
+- 🎯 **Model Evaluation**: Comprehensive model comparison with feature importance
+- 🚀 **Model Deployment**: Deploy and monitor models in production (Phase 3)
 
 ## 📋 Requirements
 
-- Python 3.8+
-- Virtual environment (recommended: `uv venv`)
+- **Python 3.13+** (leverages modern language features)
+- Virtual environment (recommended: `uv`)
 - Optional: MLflow server for experiment tracking
+- ML Libraries: XGBoost, LightGBM, CatBoost (install with `--extra ml`)
 
 ## ⚡ Quick Start
 
 ### 1. Environment Setup
 ```bash
-# Install dependencies with uv
-uv sync --extra dev
+# Install core dependencies
+uv sync
+
+# Install with ML engine support (XGBoost, LightGBM, CatBoost, PyTorch)
+uv sync --extra ml
+
+# Install development dependencies
+uv sync --extra dev --extra ml
 
 # Setup platform (creates directories, starts MLflow)
 python setup_platform.py setup
@@ -59,7 +67,7 @@ ml_platform/
 │   ├── core/                    # Core ML functionality
 │   │   ├── data_sources/        # Data connectors (Local, Snowflake, AWS)
 │   │   ├── experiment_tracking/ # MLflow integration
-│   │   ├── ml_engine/          # PyCaret ML workflows (Phase 2)
+│   │   ├── ml_engine/          # Custom ML Engine (XGBoost, LightGBM, CatBoost)
 │   │   └── pipeline_orchestration/ # Workflow management (Phase 3)
 │   ├── ui/                      # User interface
 │   │   ├── panels/             # Main UI panels
@@ -84,17 +92,17 @@ ml_platform/
 3. **Load**: Select and load your dataset
 4. **Explore**: Preview data and view profiling statistics
 
-### 🔬 Experimentation (Coming in Phase 2)
-1. **Setup**: Choose ML task type and target variable
-2. **Configure**: Select features and models to compare
-3. **Run**: Start experiment and monitor progress
-4. **Analyze**: Review results and performance metrics
+### 🔬 ML Experimentation (Phase 2 ✅ Complete)
+1. **Setup**: Choose ML task type (classification/regression) and target variable
+2. **Compare**: Automatically compare XGBoost, LightGBM, and CatBoost models
+3. **Optimize**: Hyperparameter tuning with Optuna (configurable trials and CV folds)
+4. **Track**: All experiments logged to MLflow with parameters and metrics
 
-### 📈 Model Evaluation (Coming in Phase 2)
-1. **Compare**: Select models for comparison
-2. **Visualize**: Choose charts (ROC curves, feature importance)
-3. **Analyze**: Review detailed performance metrics
-4. **Select**: Identify best performing models
+### 📈 Model Evaluation (Phase 2 ✅ Complete)
+1. **Compare**: Cross-validation scores and test performance for all models
+2. **Visualize**: Feature importance charts from gradient boosting models
+3. **Analyze**: Detailed performance metrics (accuracy, R², etc.)
+4. **Select**: Best model automatically identified and ready for deployment
 
 ### 🚀 Deployment (Coming in Phase 3)
 1. **Choose**: Select trained model for deployment
