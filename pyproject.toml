@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "A comprehensive Panel-based ML experimentation platform"
 authors = [{ name = "ML Platform Team" }]
 license = { text = "MIT" }
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 # Core dependencies (PyCaret compatible versions)
 dependencies = [
     "numpy>=1.21,<1.27",
@@ -56,15 +56,17 @@ cloud = [
     "google-cloud-storage>=2.10.0",
 ]
 
-# ML dependencies (Phase 2)
+# ML dependencies (Phase 2) - Custom ML Engine
 ml = [
-    "pycaret>=3.3.0",
     "lightgbm>=4.0.0",
     "xgboost>=2.0.0",
     "catboost>=1.2.0",
+    "torch>=2.0.0",
+    "lightning>=2.0.0",
+    "optuna>=3.0.0",
     "imbalanced-learn>=0.11.0",
-    "yellowbrick>=1.5.0",
     "shap>=0.44.0",
+    "scikit-optimize>=0.9.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -73,7 +75,7 @@ where = ["src"]
 # Ruff configuration
 [tool.ruff]
 line-length = 88
-target-version = "py312"
+target-version = "py313"
 
 [tool.ruff.lint]
 # Enable comprehensive rule set
@@ -216,7 +218,7 @@ version_scheme = "python-simplified-semver"
 local_scheme = "node-and-date"
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
