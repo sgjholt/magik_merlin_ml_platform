@@ -3,7 +3,7 @@ ML Engine module for custom machine learning workflows.
 
 This module provides a modern, sklearn-compatible ML engine with support for:
 - XGBoost, CatBoost, and LightGBM models
-- PyTorch Lightning for deep learning (coming soon)
+- PyTorch Lightning for deep learning
 - Automated model comparison and selection
 - Hyperparameter optimization with Optuna
 - MLflow integration for experiment tracking
@@ -28,6 +28,7 @@ from .classical import (
     XGBoostClassifier,
     XGBoostRegressor,
 )
+from .deep_learning import LightningClassifier, LightningRegressor
 
 __all__ = [
     "AutoMLPipeline",
@@ -38,6 +39,8 @@ __all__ = [
     "CatBoostRegressor",
     "LightGBMClassifier",
     "LightGBMRegressor",
+    "LightningClassifier",
+    "LightningRegressor",
     "ModelRegistry",
     "XGBoostClassifier",
     "XGBoostRegressor",

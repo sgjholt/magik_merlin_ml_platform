@@ -10,7 +10,9 @@ A modern Python ML experimentation platform with a custom ML engine, Panel UI, a
 ## Features
 
 - 🔬 **Custom ML Engine** - XGBoost, LightGBM, CatBoost with sklearn compatibility
+- 🧠 **Deep Learning** - PyTorch Lightning integration for neural networks
 - 🤖 **AutoML** - Automated model comparison and hyperparameter optimization
+- 🔄 **Pipeline System** - Visual workflow orchestration with scheduling
 - 📊 **Interactive UI** - Panel-based web interface
 - 📈 **Experiment Tracking** - MLflow integration
 - 🚀 **Modern Python** - Python 3.13+ with latest features
@@ -47,10 +49,11 @@ mkdocs serve
 
 - [Installation Guide](docs/getting-started/installation.md)
 - [Quick Start Tutorial](docs/getting-started/quick-start.md)
-- [ML Engine Guide](docs/user-guide/ml-engine.md)
+- [ML Engine Guide](docs/ML_ENGINE_GUIDE.md)
+- [Pipeline System Guide](docs/PIPELINE_GUIDE.md) ⭐ NEW
 - [Development Guide](docs/development/code-quality.md)
 - [API Reference](docs/api/ml-engine.md)
-- [Roadmap](docs/roadmap.md)
+- [Roadmap](ROADMAP.md)
 
 ## Why This Platform?
 
@@ -76,7 +79,9 @@ predictions = best_model.predict(X_new)
 
 ### Production Ready
 
-- ✅ 92 comprehensive tests (>90% coverage)
+- ✅ 200+ comprehensive tests (>90% coverage)
+- ✅ Complete pipeline system with scheduling
+- ✅ Deep learning integration (PyTorch Lightning)
 - ✅ Strict code quality (ruff + mypy)
 - ✅ Automatic CI/CD with GitHub Actions
 - ✅ Semantic versioning
