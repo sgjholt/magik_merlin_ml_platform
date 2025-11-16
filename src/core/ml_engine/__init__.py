@@ -30,19 +30,16 @@ from .classical import (
 )
 
 __all__ = [
-    # Base classes
-    "BaseMLModel",
+    "AutoMLPipeline",
     "BaseClassifier",
+    "BaseMLModel",
     "BaseRegressor",
-    "ModelRegistry",
-    "model_registry",
-    # Classical models
-    "XGBoostClassifier",
-    "XGBoostRegressor",
-    "LightGBMClassifier",
-    "LightGBMRegressor",
     "CatBoostClassifier",
     "CatBoostRegressor",
-    # AutoML
-    "AutoMLPipeline",
+    "LightGBMClassifier",
+    "LightGBMRegressor",
+    "ModelRegistry",
+    "XGBoostClassifier",
+    "XGBoostRegressor",
+    "model_registry",
 ]

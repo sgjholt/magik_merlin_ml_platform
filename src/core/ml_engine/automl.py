@@ -18,7 +18,7 @@ from sklearn.model_selection import cross_val_score, train_test_split
 
 from ..experiments.tracking import ExperimentTracker
 from ..logging import get_logger
-from .base import BaseClassifier, BaseMLModel, BaseRegressor, model_registry
+from .base import BaseMLModel, model_registry
 
 try:
     import optuna
@@ -170,9 +170,8 @@ class AutoMLPipeline:
                 )
 
             except Exception as e:
-                self.logger.error(
+                self.logger.exception(
                     f"Failed to train {model_name}",
-                    exc_info=True,
                     extra={"error_type": type(e).__name__},
                 )
 
@@ -309,7 +308,7 @@ class AutoMLPipeline:
                 "colsample_bytree": trial.suggest_float("colsample_bytree", 0.6, 1.0),
                 "random_state": self.random_state,
             }
-        elif "lightgbm" in model_name:
+        if "lightgbm" in model_name:
             return {
                 "n_estimators": trial.suggest_int("n_estimators", 50, 300),
                 "max_depth": trial.suggest_int("max_depth", 3, 10),
@@ -320,7 +319,7 @@ class AutoMLPipeline:
                 "random_state": self.random_state,
                 "verbosity": -1,
             }
-        elif "catboost" in model_name:
+        if "catboost" in model_name:
             return {
                 "iterations": trial.suggest_int("iterations", 50, 300),
                 "depth": trial.suggest_int("depth", 3, 10),
@@ -329,9 +328,8 @@ class AutoMLPipeline:
                 "random_state": self.random_state,
                 "verbose": False,
             }
-        else:
-            # Default parameter space
-            return {"random_state": self.random_state}
+        # Default parameter space
+        return {"random_state": self.random_state}
 
     def get_best_model(self) -> BaseMLModel:
         """

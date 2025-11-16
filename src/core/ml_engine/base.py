@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator as SklearnBaseEstimator
 from sklearn.base import ClassifierMixin, RegressorMixin
+from sklearn.metrics import accuracy_score, r2_score
 
 from ..logging import get_logger
 
@@ -59,7 +60,7 @@ class BaseMLModel(SklearnBaseEstimator, ABC):
         Returns:
             self: Fitted model instance
         """
-        pass
+        ...
 
     @abstractmethod
     def predict(self, X: pd.DataFrame | np.ndarray) -> np.ndarray:
@@ -72,7 +73,7 @@ class BaseMLModel(SklearnBaseEstimator, ABC):
         Returns:
             Predictions as numpy array
         """
-        pass
+        ...
 
     def _validate_input(self, X: pd.DataFrame | np.ndarray) -> pd.DataFrame:
         """
@@ -101,12 +102,12 @@ class BaseMLModel(SklearnBaseEstimator, ABC):
         if isinstance(X, pd.DataFrame):
             self.feature_names_in_ = list(X.columns)
 
-    def get_params(self, deep: bool = True) -> dict[str, Any]:
+    def get_params(self, deep: bool = True) -> dict[str, Any]:  # noqa: ARG002
         """
         Get model hyperparameters (sklearn-compatible).
 
         Args:
-            deep: If True, return params for nested objects
+            deep: If True, return params for nested objects (not used in simple implementation)
 
         Returns:
             Dictionary of hyperparameters
@@ -159,7 +160,7 @@ class BaseClassifier(BaseMLModel, ClassifierMixin):
         Returns:
             Class probabilities as numpy array
         """
-        pass
+        ...
 
     def score(
         self,
@@ -178,8 +179,6 @@ class BaseClassifier(BaseMLModel, ClassifierMixin):
         Returns:
             Accuracy score
         """
-        from sklearn.metrics import accuracy_score
-
         y_pred = self.predict(X)
         return accuracy_score(y, y_pred, sample_weight=sample_weight)
 
@@ -204,8 +203,6 @@ class BaseRegressor(BaseMLModel, RegressorMixin):
         Returns:
             R² score
         """
-        from sklearn.metrics import r2_score
-
         y_pred = self.predict(X)
         return r2_score(y, y_pred, sample_weight=sample_weight)
 

@@ -151,6 +151,16 @@ ignore = [
     "PLR2004", # Magic value used in comparison
     "SLF001",  # Private member accessed
 ]
+"src/core/ml_engine/**/*.py" = [
+    "N803",    # Argument name should be lowercase (X, y are ML conventions)
+    "N806",    # Variable should be lowercase (X, y are ML conventions)
+    "ANN401",  # Allow typing.Any in ML engine (needed for flexibility)
+    "TID252",  # Relative imports OK in ml_engine package
+    "G004",    # f-strings in logging OK for better readability
+    "PLR2004", # Magic values OK in ML code (e.g., checking n_classes > 2)
+    "TC001",   # Type-checking block imports too strict for our use case
+    "TC002",   # Type-checking block imports too strict for our use case
+]
 
 [tool.ruff.format]
 quote-style = "double"
