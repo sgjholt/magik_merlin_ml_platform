@@ -182,7 +182,12 @@ class TestFeatureScalerNode:
 
     def test_scale_single_dataframe(self):
         """Test scaling a single DataFrame."""
-        data = pd.DataFrame({"a": [1, 2, 3, 4, 5], "b": [10, 20, 30, 40, 50]})
+        # Use larger sample size for more stable scaling statistics
+        np.random.seed(42)
+        data = pd.DataFrame({
+            "a": np.random.randn(100) * 10 + 50,
+            "b": np.random.randn(100) * 5 + 20,
+        })
         input_output = NodeOutput(data=data)
 
         node = FeatureScalerNode(node_id="scaler1")
