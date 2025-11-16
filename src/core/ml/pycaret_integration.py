@@ -20,6 +20,23 @@ from ..ml_engine import AutoMLPipeline
 PYCARET_AVAILABLE = False
 
 
+class PyCaretPipeline:
+    """
+    DEPRECATED: Backward compatibility stub for old PyCaret pipeline.
+
+    This class is deprecated and raises an error. Use AutoMLWorkflow or
+    the ml_engine module directly instead.
+    """
+
+    def __init__(self, task_type: str, **kwargs: Any) -> None:
+        """Raise ImportError to indicate PyCaret is no longer used."""
+        msg = (
+            "PyCaret is not installed. This project now uses a custom ML engine. "
+            "Use AutoMLWorkflow or src.core.ml_engine.AutoMLPipeline instead."
+        )
+        raise ImportError(msg)
+
+
 class AutoMLWorkflow:
     """
     Automated ML workflow using custom ML Engine (PyCaret replacement).
