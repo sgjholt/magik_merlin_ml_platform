@@ -49,8 +49,9 @@ class TestCompleteDataWorkflow:
 
         # Step 5: Generate profile
         profile = datasource.get_data_profile(df)
-        assert profile["shape"] == df.shape
-        assert len(profile["columns"]) == len(df.columns)
+        assert profile["shape"]["rows"] == df.shape[0]
+        assert profile["shape"]["columns"] == df.shape[1]
+        assert len(profile["schema"]) == len(df.columns)
 
         # Step 6: Get preview
         preview = datasource.get_data_preview(csv_file, limit=10)
@@ -202,9 +203,9 @@ class TestCompleteDataWorkflow:
 
             # Test data profiling
             profile = datasource.get_data_profile(df)
-            assert profile["shape"] == df.shape
-            assert profile["columns"] == list(df.columns)
-            assert "dtypes" in profile
+            assert profile["shape"]["rows"] == df.shape[0]
+            assert profile["shape"]["columns"] == df.shape[1]
+            assert set(profile["schema"].keys()) == set(df.columns)
             assert "null_counts" in profile
             assert "memory_usage" in profile
 

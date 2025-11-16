@@ -287,26 +287,20 @@ class TestErrorHandling:
         assert pipeline.best_model is not None
 
     def test_automl_workflow_without_mlflow(self, sample_data):
-        """Test AutoMLWorkflow without MLflow tracker."""
-        from src.core.ml.pycaret_integration import AutoMLWorkflow
+        """Test AutoMLPipeline without MLflow tracker."""
+        from src.core.ml_engine import AutoMLPipeline
 
         X, y = sample_data
-        data = X.copy()
-        data["target"] = y
 
-        # Create workflow without tracker
-        workflow = AutoMLWorkflow(experiment_tracker=None)
+        # Create pipeline without tracker
+        pipeline = AutoMLPipeline(task_type="classification", experiment_tracker=None)
 
         # Skip if no models available
         try:
-            results = workflow.run_automl(
-                data=data,
-                task_type="classification",
-                target="target",
-                tune_hyperparameters=False,
-            )
+            results = pipeline.compare_models(X, y, cv=3)
 
-            assert results["final_model"] is not None
+            assert len(results) > 0
+            assert pipeline.best_model is not None
 
         except ValueError as e:
             if "No models available" in str(e):
