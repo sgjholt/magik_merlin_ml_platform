@@ -15,14 +15,19 @@ class AWSDataSource(DataSource):
         self.connection_params = config.connection_params
         self.s3_client = None
         self.bucket_name = self.connection_params.get("bucket_name")
-        self.logger = get_logger(__name__, data_source="aws_s3", bucket=self.bucket_name)
+        self.logger = get_logger(
+            __name__, data_source="aws_s3", bucket=self.bucket_name
+        )
 
     def connect(self) -> bool:
-        self.logger.info("Attempting to connect to AWS S3", extra={
-            "region": self.connection_params.get("region", "us-east-1"),
-            "bucket": self.bucket_name
-        })
-        
+        self.logger.info(
+            "Attempting to connect to AWS S3",
+            extra={
+                "region": self.connection_params.get("region", "us-east-1"),
+                "bucket": self.bucket_name,
+            },
+        )
+
         try:
             self.s3_client = boto3.client(
                 "s3",
@@ -33,9 +38,11 @@ class AWSDataSource(DataSource):
             self.logger.info("Successfully connected to AWS S3")
             return True
         except Exception as e:
-            self.logger.error("Failed to connect to AWS S3", exc_info=True, extra={
-                "error_type": type(e).__name__
-            })
+            self.logger.error(
+                "Failed to connect to AWS S3",
+                exc_info=True,
+                extra={"error_type": type(e).__name__},
+            )
             return False
 
     def disconnect(self) -> None:

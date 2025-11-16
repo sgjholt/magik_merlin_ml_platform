@@ -25,7 +25,7 @@ class ExperimentTracker:
     ):
         # Import here to avoid circular imports
         from ...config.settings import settings
-        
+
         self.tracking_uri = tracking_uri or settings.mlflow_tracking_uri
         self.experiment_name = experiment_name or settings.mlflow_experiment_name
         self.active_run = None
@@ -36,7 +36,7 @@ class ExperimentTracker:
             self._check_and_setup_mlflow()
         else:
             self.logger.warning("MLflow not available - experiment tracking disabled")
-            
+
     def _check_mlflow_server(self, timeout: int = 5) -> bool:
         """Check if MLflow server is accessible"""
         try:
@@ -45,7 +45,7 @@ class ExperimentTracker:
             return response.status_code == 200 and "MLflow" in response.text
         except requests.exceptions.RequestException:
             return False
-            
+
     def _check_and_setup_mlflow(self) -> None:
         """Check MLflow server availability and setup connection"""
         try:
@@ -76,7 +76,7 @@ class ExperimentTracker:
                 self.logger.warning("MLflow server not available when starting run")
                 self._server_available = False
                 return False
-                
+
             self.active_run = mlflow.start_run(run_name=run_name)
             self.logger.info(f"Started MLflow run: {self.active_run.info.run_id}")
             return True
@@ -144,12 +144,14 @@ class ExperimentTracker:
 
     def is_active(self) -> bool:
         """Check if tracking is active"""
-        return MLFLOW_AVAILABLE and self._server_available and self.active_run is not None
-        
+        return (
+            MLFLOW_AVAILABLE and self._server_available and self.active_run is not None
+        )
+
     def is_server_available(self) -> bool:
         """Check if MLflow server is available"""
         return MLFLOW_AVAILABLE and self._server_available
-        
+
     def reconnect(self) -> bool:
         """Attempt to reconnect to MLflow server"""
         if MLFLOW_AVAILABLE:

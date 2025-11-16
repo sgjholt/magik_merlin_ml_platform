@@ -78,9 +78,7 @@ class LocalFileDataSource(DataSource):
 
         return [str(f.relative_to(self.base_path)) for f in files]
 
-    def save_data(
-        self, df: pd.DataFrame, file_path: str, **kwargs
-    ) -> None:
+    def save_data(self, df: pd.DataFrame, file_path: str, **kwargs) -> None:
         full_path = self.base_path / file_path
         full_path.parent.mkdir(parents=True, exist_ok=True)
 

@@ -45,7 +45,7 @@ class BaseVisualization(ABC):
             self._figure,
             width=self.width,
             height=self.height,
-            sizing_mode="stretch_width"
+            sizing_mode="stretch_width",
         )
         return self._panel
 
@@ -60,8 +60,16 @@ class PlotTheme:
 
     # Color palette
     PRIMARY_COLORS = [
-        "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
-        "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"
+        "#1f77b4",
+        "#ff7f0e",
+        "#2ca02c",
+        "#d62728",
+        "#9467bd",
+        "#8c564b",
+        "#e377c2",
+        "#7f7f7f",
+        "#bcbd22",
+        "#17becf",
     ]
 
     BACKGROUND_COLOR = "#fafafa"
@@ -81,31 +89,31 @@ class PlotTheme:
             "font": {
                 "family": cls.FONT_FAMILY,
                 "size": cls.AXIS_FONT_SIZE,
-                "color": cls.TEXT_COLOR
+                "color": cls.TEXT_COLOR,
             },
             "title": {
                 "font": {"size": cls.TITLE_FONT_SIZE},
                 "x": 0.5,
-                "xanchor": "center"
+                "xanchor": "center",
             },
             "plot_bgcolor": cls.BACKGROUND_COLOR,
             "paper_bgcolor": "white",
             "xaxis": {
                 "gridcolor": cls.GRID_COLOR,
                 "showgrid": True,
-                "linecolor": cls.GRID_COLOR
+                "linecolor": cls.GRID_COLOR,
             },
             "yaxis": {
                 "gridcolor": cls.GRID_COLOR,
                 "showgrid": True,
-                "linecolor": cls.GRID_COLOR
+                "linecolor": cls.GRID_COLOR,
             },
             "legend": {
                 "font": {"size": cls.LEGEND_FONT_SIZE},
                 "bgcolor": "rgba(255,255,255,0.8)",
                 "bordercolor": cls.GRID_COLOR,
-                "borderwidth": 1
-            }
+                "borderwidth": 1,
+            },
         }
 
     @classmethod
@@ -139,7 +147,7 @@ class InteractiveVisualization(BaseVisualization):
             self.control_panel = pn.Column(
                 pn.pane.Markdown(f"### {self.title} Controls"),
                 *list(self.controls.values()),
-                width=250
+                width=250,
             )
         return self.control_panel
 
@@ -149,26 +157,31 @@ class InteractiveVisualization(BaseVisualization):
         return pn.Row(
             self.get_control_panel(),
             self.get_panel(data, **kwargs),
-            sizing_mode="stretch_width"
+            sizing_mode="stretch_width",
         )
 
 
-def create_empty_figure(title: str = "No Data", message: str = "No data available") -> go.Figure:
+def create_empty_figure(
+    title: str = "No Data", message: str = "No data available"
+) -> go.Figure:
     """Create an empty figure with a message."""
     fig = go.Figure()
     fig.add_annotation(
         text=message,
-        xref="paper", yref="paper",
-        x=0.5, y=0.5,
-        xanchor="center", yanchor="middle",
+        xref="paper",
+        yref="paper",
+        x=0.5,
+        y=0.5,
+        xanchor="center",
+        yanchor="middle",
         showarrow=False,
-        font={"size": 16, "color": "#666666"}
+        font={"size": 16, "color": "#666666"},
     )
     fig.update_layout(
         title=title,
         xaxis={"visible": False},
         yaxis={"visible": False},
-        **PlotTheme.get_layout_template()
+        **PlotTheme.get_layout_template(),
     )
     return PlotTheme.apply_theme(fig)
 

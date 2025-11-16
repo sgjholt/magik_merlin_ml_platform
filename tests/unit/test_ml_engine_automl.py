@@ -50,7 +50,10 @@ def regression_dataset():
     )
     # Create continuous target
     y = pd.Series(
-        X["feature_0"] * 2 + X["feature_1"] * 1.5 - X["feature_2"] + np.random.randn(n_samples) * 0.2,
+        X["feature_0"] * 2
+        + X["feature_1"] * 1.5
+        - X["feature_2"]
+        + np.random.randn(n_samples) * 0.2,
         name="target",
     )
 
@@ -140,9 +143,7 @@ class TestAutoMLCompareModels:
         if len(available_models) >= 2:
             # Compare only first two models
             models_to_compare = available_models[:2]
-            results_df = pipeline.compare_models(
-                X, y, models=models_to_compare, cv=3
-            )
+            results_df = pipeline.compare_models(X, y, models=models_to_compare, cv=3)
 
             assert len(results_df) <= len(models_to_compare)
 
@@ -290,9 +291,7 @@ class TestAutoMLWithLightGBM:
         X, y = classification_dataset
         pipeline = AutoMLPipeline(task_type="classification")
 
-        results_df = pipeline.compare_models(
-            X, y, models=["lightgbm_classifier"], cv=3
-        )
+        results_df = pipeline.compare_models(X, y, models=["lightgbm_classifier"], cv=3)
 
         assert not results_df.empty
         assert results_df.iloc[0]["model"] == "lightgbm_classifier"
@@ -310,9 +309,7 @@ class TestAutoMLWithCatBoost:
         X, y = classification_dataset
         pipeline = AutoMLPipeline(task_type="classification")
 
-        results_df = pipeline.compare_models(
-            X, y, models=["catboost_classifier"], cv=3
-        )
+        results_df = pipeline.compare_models(X, y, models=["catboost_classifier"], cv=3)
 
         assert not results_df.empty
         assert results_df.iloc[0]["model"] == "catboost_classifier"
@@ -392,4 +389,6 @@ class TestAutoMLIntegration:
         assert len(results_df) == 2
 
         # Both should have reasonable scores
-        assert all(results_df["test_score"] > -1.0)  # R² can be negative but not too bad
+        assert all(
+            results_df["test_score"] > -1.0
+        )  # R² can be negative but not too bad

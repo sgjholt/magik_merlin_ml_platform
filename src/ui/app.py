@@ -225,9 +225,9 @@ class MLPlatformApp:
         """Callback when an experiment is completed"""
         self.session_stats["experiments_run"] += 1
         # Assume each experiment trains multiple models
-        self.session_stats[
-            "models_trained"
-        ] += 3  # Average number of models per experiment
+        self.session_stats["models_trained"] += (
+            3  # Average number of models per experiment
+        )
         self._update_session_stats()
 
     def serve(

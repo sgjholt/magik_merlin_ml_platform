@@ -44,11 +44,9 @@ class TestMLPlatformApp:
         app = MLPlatformApp()
 
         # Test with sample data
-        sample_data = pd.DataFrame({
-            "feature1": [1, 2, 3],
-            "feature2": [4, 5, 6],
-            "target": [0, 1, 0]
-        })
+        sample_data = pd.DataFrame(
+            {"feature1": [1, 2, 3], "feature2": [4, 5, 6], "target": [0, 1, 0]}
+        )
 
         # Trigger callback
         app._on_data_updated(sample_data)

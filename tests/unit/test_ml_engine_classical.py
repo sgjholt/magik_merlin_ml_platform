@@ -37,9 +37,7 @@ def binary_classification_data():
         columns=[f"feature_{i}" for i in range(n_features)],
     )
     # Create binary target with some pattern
-    y = pd.Series(
-        (X["feature_0"] + X["feature_1"] > 0).astype(int), name="target"
-    )
+    y = pd.Series((X["feature_0"] + X["feature_1"] > 0).astype(int), name="target")
 
     return X, y
 
@@ -56,9 +54,7 @@ def multiclass_classification_data():
         columns=[f"feature_{i}" for i in range(n_features)],
     )
     # Create 3-class target
-    y = pd.Series(
-        np.random.choice([0, 1, 2], size=n_samples), name="target"
-    )
+    y = pd.Series(np.random.choice([0, 1, 2], size=n_samples), name="target")
 
     return X, y
 
@@ -76,7 +72,10 @@ def regression_data():
     )
     # Create continuous target with some pattern
     y = pd.Series(
-        X["feature_0"] * 2 + X["feature_1"] - X["feature_2"] + np.random.randn(n_samples) * 0.1,
+        X["feature_0"] * 2
+        + X["feature_1"]
+        - X["feature_2"]
+        + np.random.randn(n_samples) * 0.1,
         name="target",
     )
 

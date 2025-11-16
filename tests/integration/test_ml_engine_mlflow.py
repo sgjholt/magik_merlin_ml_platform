@@ -65,9 +65,7 @@ class TestMLEngineMLflowIntegration:
         )
 
         # Compare models
-        results_df = pipeline.compare_models(
-            X, y, models=["xgboost_classifier"], cv=3
-        )
+        results_df = pipeline.compare_models(X, y, models=["xgboost_classifier"], cv=3)
 
         # Verify tracking was called
         assert tracker.log_metrics.called

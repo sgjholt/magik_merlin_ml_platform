@@ -127,9 +127,7 @@ class AutoMLPipeline:
                     X_train,
                     y_train,
                     cv=cv,
-                    scoring="accuracy"
-                    if self.task_type == "classification"
-                    else "r2",
+                    scoring="accuracy" if self.task_type == "classification" else "r2",
                 )
 
                 # Train on full training set
