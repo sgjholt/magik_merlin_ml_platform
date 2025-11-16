@@ -22,7 +22,7 @@ class TestExperimentTracker:
         """Test initialization when MLflow is not available"""
         with patch("src.core.experiments.tracking.MLFLOW_AVAILABLE", False):
             tracker = ExperimentTracker()
-            assert tracker.tracking_uri == "http://localhost:5000"
+            assert tracker.tracking_uri == "http://127.0.0.1:5000"
             assert tracker.experiment_name == "ml-platform-experiments"
             assert tracker.active_run is None
 
@@ -32,7 +32,7 @@ class TestExperimentTracker:
         with patch("src.core.experiments.tracking.mlflow") as mock_mlflow:
             tracker = ExperimentTracker()
             mock_mlflow.set_tracking_uri.assert_called_once_with(
-                "http://localhost:5000"
+                "http://127.0.0.1:5000"
             )
             mock_mlflow.set_experiment.assert_called_once_with(
                 "ml-platform-experiments"
