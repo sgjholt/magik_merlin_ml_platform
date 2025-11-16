@@ -194,8 +194,8 @@ class PipelineStorage:
         exec_dir = self.executions_dir / result.pipeline_id
         exec_dir.mkdir(parents=True, exist_ok=True)
 
-        # Generate execution file name with timestamp
-        timestamp = result.start_time.strftime("%Y%m%d_%H%M%S")
+        # Generate execution file name with timestamp (including microseconds for uniqueness)
+        timestamp = result.start_time.strftime("%Y%m%d_%H%M%S_%f")
         exec_file = exec_dir / f"exec_{timestamp}.json"
 
         # Save result
