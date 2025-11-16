@@ -174,6 +174,12 @@ ignore = [
     "DTZ005",  # datetime.now() without tz acceptable in tests
     "B007",    # Loop control variable not used - OK in tests
 ]
+# Phase 4 modules - skeleton code with flexible APIs
+"src/core/ml_engine/time_series.py" = ["ANN401"]  # Any in kwargs acceptable for flexible model APIs
+"src/core/ml_engine/ensemble.py" = ["ANN401"]     # Any in kwargs acceptable for flexible model APIs
+"src/core/ml_engine/explainability.py" = ["ANN401"]  # Any in kwargs acceptable for visualization APIs
+"src/core/data_sources/streaming.py" = ["ANN401"]  # Any in kwargs acceptable for connector APIs
+"src/core/data_sources/databases.py" = ["ANN401"]  # Any in kwargs acceptable for connector APIs
 # ML Engine - follows ML/data science conventions (sklearn, pandas, numpy)
 "src/core/ml_engine/**/*.py" = [
     "N803",    # IMPORTANT: X (features) and y (targets) are universal ML conventions
