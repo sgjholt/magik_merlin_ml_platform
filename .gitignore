@@ -102,6 +102,9 @@ tmp/
 *.tar.gz
 *.zip
 
+# UV lock file (generated locally)
+uv.lock
+
 # Documentation builds
 docs/_build/
 site/
