@@ -21,7 +21,6 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-import numpy as np
 import pandas as pd
 from sklearn.datasets import make_classification, make_regression
 from sklearn.model_selection import train_test_split
@@ -88,7 +87,7 @@ def demo_classification():
     predictions = best_model.predict(X_test)
     probabilities = best_model.predict_proba(X_test)
 
-    print(f"📊 Test set predictions (first 10):")
+    print("📊 Test set predictions (first 10):")
     print(f"   True values:  {y_test.values[:10]}")
     print(f"   Predictions:  {predictions[:10]}")
     print(f"\n   Class 0 probabilities (first 5): {probabilities[:5, 0]}")
@@ -171,11 +170,11 @@ def demo_regression():
     # 5. Make predictions
     predictions = best_model.predict(X_test)
 
-    print(f"\n📊 Test set predictions (first 10):")
+    print("\n📊 Test set predictions (first 10):")
     comparison = pd.DataFrame({
-        'True': y_test.values[:10],
-        'Predicted': predictions[:10],
-        'Error': (y_test.values[:10] - predictions[:10])
+        "True": y_test.values[:10],
+        "Predicted": predictions[:10],
+        "Error": (y_test.values[:10] - predictions[:10])
     })
     print(comparison.to_string(index=False))
 
@@ -226,7 +225,7 @@ def demo_individual_model():
     predictions = model.predict(X_test)
     accuracy = model.score(X_test, y_test)
 
-    print(f"   Model trained successfully!")
+    print("   Model trained successfully!")
     print(f"   Test accuracy: {accuracy:.4f}")
 
     # Get parameters
@@ -235,7 +234,7 @@ def demo_individual_model():
 
     # Feature importance
     importance_df = model.get_feature_importance()
-    print(f"\n🔍 Feature importance (top 5):")
+    print("\n🔍 Feature importance (top 5):")
     print(importance_df.head(5).to_string(index=False))
 
     print("\n✅ Individual model demo completed!")
@@ -277,7 +276,7 @@ def main():
         print("\n🚀 Happy ML Engineering!")
 
     except ImportError as e:
-        print(f"\n❌ Error: Missing required libraries.")
+        print("\n❌ Error: Missing required libraries.")
         print(f"   {e}")
         print("\n💡 Install ML dependencies with:")
         print("   uv sync --extra ml")

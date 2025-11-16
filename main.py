@@ -18,10 +18,10 @@ def main() -> None:
     """Main application entry point"""
     # Initialize logging system first
     setup_logging()
-    
+
     # Get logger with application context
     logger = get_logger(__name__, pipeline_stage="startup")
-    
+
     logger.info("Starting ML Experimentation Platform")
     logger.info("Configuration loaded", extra={
         "mlflow_uri": settings.mlflow_tracking_uri,
@@ -35,13 +35,13 @@ def main() -> None:
         # Create and run the application
         app = MLPlatformApp()
         logger.info(f"Application will be available at: http://{settings.app_host}:{settings.app_port}")
-        
+
         app.serve(
             port=settings.app_port,
             show=True,
             autoreload=settings.debug
         )
-    except Exception as e:
+    except Exception:
         logger.critical("Failed to start application", exc_info=True)
         raise
 
