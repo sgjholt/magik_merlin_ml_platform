@@ -9,9 +9,6 @@ import numpy as np
 import pandas as pd
 import pytest
 
-# Import markers from conftest
-from conftest import requires_xgboost
-
 from src.core.pipeline_orchestration.nodes import (
     DataLoaderNode,
     DataPreprocessorNode,
@@ -23,6 +20,18 @@ from src.core.pipeline_orchestration.nodes import (
     NodeStatus,
     NodeType,
     TrainTestSplitNode,
+)
+
+# Check if XGBoost is available
+try:
+    import xgboost  # noqa: F401
+    HAS_XGBOOST = True
+except ImportError:
+    HAS_XGBOOST = False
+
+requires_xgboost = pytest.mark.skipif(
+    not HAS_XGBOOST,
+    reason="XGBoost not installed (install with: uv sync --extra ml)"
 )
 
 
