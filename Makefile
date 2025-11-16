@@ -31,6 +31,15 @@ help:
 	@echo "Application:"
 	@echo "  run            - Run the application"
 	@echo "  clean          - Clean up generated files"
+	@echo ""	@echo "Development Workflow:"
+	@echo "  dev-test       - Run code quality checks and fast tests"
+	@echo ""	@echo "CI/CD:"
+	@echo "  ci-test        - Run tests with coverage and code quality checks"
+	@echo ""	@echo "Documentation:"
+	@echo "  build_docs     - Build the documentation site"
+	@echo "  serve_docs     - Serve the documentation site locally"
+	@echo "  clean_docs     - Clean the documentation build"
+	@echo "  docs           - Build and serve the documentation site"
 
 # Environment setup (using uv best practices)
 install:
@@ -106,3 +115,16 @@ dev-test: check test-fast
 
 # CI/CD targets
 ci-test: test-coverage check
+
+# Documentation targets
+build_docs:
+	uvx --with "mkdocs-material, mkdocstrings, mkdocstrings-python, pymdown-extensions" mkdocs build
+# Serve documentation locally
+serve_docs:
+	uvx --with "mkdocs-material, mkdocstrings, mkdocstrings-python, pymdown-extensions" mkdocs serve -a localhost:8000
+# clean documentation build
+clean_docs:
+	rm -rf site/
+
+# Build and serve documentation
+docs: build_docs serve_docs
