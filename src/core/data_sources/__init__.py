@@ -1,7 +1,7 @@
-from .base import DataSource
+from .base import DataSource, DataSourceConfig
 from .local_file import LocalFileDataSource
 
-__all__ = ["DataSource", "LocalFileDataSource"]
+__all__ = ["DataSource", "DataSourceConfig", "LocalFileDataSource"]
 
 # Optional imports for cloud connectors
 try:
@@ -17,3 +17,38 @@ try:
     __all__.append("AWSDataSource")
 except ImportError:
     AWSDataSource = None
+
+# Optional imports for database connectors (Phase 4)
+try:
+    from .databases import (
+        MongoDBDataSource,
+        MySQLDataSource,
+        PostgreSQLDataSource,
+        SQLAlchemyDataSource,
+    )
+
+    __all__.extend([
+        "MongoDBDataSource",
+        "MySQLDataSource",
+        "PostgreSQLDataSource",
+        "SQLAlchemyDataSource",
+    ])
+except ImportError:
+    PostgreSQLDataSource = None
+    MySQLDataSource = None
+    MongoDBDataSource = None
+    SQLAlchemyDataSource = None
+
+# Optional imports for streaming connectors (Phase 4)
+try:
+    from .streaming import KafkaDataSource, StreamProcessor, WebSocketDataSource
+
+    __all__.extend([
+        "KafkaDataSource",
+        "StreamProcessor",
+        "WebSocketDataSource",
+    ])
+except ImportError:
+    KafkaDataSource = None
+    WebSocketDataSource = None
+    StreamProcessor = None
