@@ -16,7 +16,7 @@ from typing import Any
 
 from src.core.logging import get_logger
 
-from .nodes import BaseNode, NodeOutput, NodeStatus
+from .nodes import BaseNode
 
 logger = get_logger(__name__)
 
@@ -291,7 +291,7 @@ class Pipeline:
 
         # Build adjacency list and in-degree map
         adj_list: dict[str, list[str]] = {node_id: [] for node_id in self.nodes}
-        in_degree: dict[str, int] = {node_id: 0 for node_id in self.nodes}
+        in_degree: dict[str, int] = dict.fromkeys(self.nodes, 0)
 
         for edge in self.edges:
             adj_list[edge.source_node_id].append(edge.target_node_id)
@@ -352,9 +352,7 @@ class Pipeline:
             "name": self.name,
             "description": self.description,
             "status": self.status.value,
-            "nodes": {
-                node_id: node.to_dict() for node_id, node in self.nodes.items()
-            },
+            "nodes": {node_id: node.to_dict() for node_id, node in self.nodes.items()},
             "edges": [
                 {
                     "source": edge.source_node_id,
@@ -420,8 +418,12 @@ class Pipeline:
         # Load metadata
         metadata_dict = data.get("metadata", {})
         pipeline.metadata = PipelineMetadata(
-            created_at=datetime.fromisoformat(metadata_dict.get("created_at", datetime.now().isoformat())),
-            updated_at=datetime.fromisoformat(metadata_dict.get("updated_at", datetime.now().isoformat())),
+            created_at=datetime.fromisoformat(
+                metadata_dict.get("created_at", datetime.now().isoformat())
+            ),
+            updated_at=datetime.fromisoformat(
+                metadata_dict.get("updated_at", datetime.now().isoformat())
+            ),
             created_by=metadata_dict.get("created_by", "system"),
             version=metadata_dict.get("version", "1.0.0"),
             tags=metadata_dict.get("tags", []),

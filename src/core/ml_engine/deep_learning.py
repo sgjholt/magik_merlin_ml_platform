@@ -11,10 +11,9 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
-import torch.nn as nn
 from lightning import LightningModule, Trainer
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
-from lightning.pytorch.loggers import MLFlowLogger
+from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
 from .base import BaseClassifier, BaseRegressor
@@ -232,7 +231,7 @@ class LightningClassifier(BaseClassifier):
         val_loader = DataLoader(val_dataset, batch_size=self.batch_size)
 
         # Create model
-        output_dim = self.n_classes_ if self.n_classes_ > 2 else 1  # noqa: PLR2004
+        output_dim = self.n_classes_ if self.n_classes_ > 2 else 1
         self.model_ = TabularNet(
             input_dim=self.n_features_in_,
             output_dim=output_dim,
@@ -294,7 +293,7 @@ class LightningClassifier(BaseClassifier):
         with torch.no_grad():
             logits = self.model_(X_tensor)
 
-            if self.n_classes_ > 2:  # noqa: PLR2004
+            if self.n_classes_ > 2:
                 predictions = torch.argmax(logits, dim=1).numpy()
             else:
                 predictions = (torch.sigmoid(logits.squeeze()) > 0.5).long().numpy()
@@ -326,7 +325,7 @@ class LightningClassifier(BaseClassifier):
         with torch.no_grad():
             logits = self.model_(X_tensor)
 
-            if self.n_classes_ > 2:  # noqa: PLR2004
+            if self.n_classes_ > 2:
                 probas = torch.softmax(logits, dim=1).numpy()
             else:
                 pos_proba = torch.sigmoid(logits.squeeze()).numpy()
@@ -537,7 +536,9 @@ class LightningRegressor(BaseRegressor):
 try:
     from .base import model_registry
 
-    model_registry.register("lightning_classifier", LightningClassifier, "deep_learning")
+    model_registry.register(
+        "lightning_classifier", LightningClassifier, "deep_learning"
+    )
     model_registry.register("lightning_regressor", LightningRegressor, "deep_learning")
 except ImportError:
     pass  # Registry not available during import

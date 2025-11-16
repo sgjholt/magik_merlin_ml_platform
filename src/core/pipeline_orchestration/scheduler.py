@@ -8,15 +8,13 @@ from __future__ import annotations
 
 import threading
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING
 
 from src.core.logging import get_logger
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from .executor import PipelineExecutor
     from .pipeline import Pipeline
 
@@ -123,7 +121,9 @@ class PipelineScheduler:
             return
 
         self._running = True
-        self._scheduler_thread = threading.Thread(target=self._scheduler_loop, daemon=True)
+        self._scheduler_thread = threading.Thread(
+            target=self._scheduler_loop, daemon=True
+        )
         self._scheduler_thread.start()
         self.logger.info("Pipeline scheduler started")
 
@@ -256,7 +256,7 @@ class PipelineScheduler:
         # Format: minute hour day month weekday
         parts = cron_expression.split()
 
-        if len(parts) != 5:  # noqa: PLR2004
+        if len(parts) != 5:
             self.logger.warning(f"Invalid cron expression: {cron_expression}")
             # Default to daily at midnight
             from datetime import timedelta
@@ -274,9 +274,7 @@ class PipelineScheduler:
             cron = croniter(cron_expression, datetime.now())
             return cron.get_next(datetime)
         except ImportError:
-            self.logger.warning(
-                "croniter not installed, using simplified cron parsing"
-            )
+            self.logger.warning("croniter not installed, using simplified cron parsing")
             # Fallback to simple daily schedule
             from datetime import timedelta
 

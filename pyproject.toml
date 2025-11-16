@@ -170,6 +170,9 @@ ignore = [
     "PD003",   # .isnull vs .isna - both work
     "PD011",   # .values vs .to_numpy - both work
     "SIM117",  # Nested with statements OK in tests
+    "PT011",   # pytest.raises broad exceptions OK in tests
+    "DTZ005",  # datetime.now() without tz acceptable in tests
+    "B007",    # Loop control variable not used - OK in tests
 ]
 # ML Engine - follows ML/data science conventions (sklearn, pandas, numpy)
 "src/core/ml_engine/**/*.py" = [
@@ -181,6 +184,29 @@ ignore = [
     "PLR2004", # Magic numbers are domain knowledge (e.g., n_classes > 2 = multiclass)
     "TC001",   # Imports used at runtime, not just type-checking
     "TC002",   # Imports used at runtime, not just type-checking
+    "ARG002",  # Unused arguments in Lightning methods (batch_idx, deep) are required by interface
+    "PD011",   # .values vs .to_numpy - both work in ML context
+    "RET504",  # Unnecessary assignment before return - clearer with explicit variable
+]
+# Pipeline orchestration - similar to experiments code
+"src/core/pipeline_orchestration/**/*.py" = [
+    "ANN",     # Type annotations flexible for pipeline nodes
+    "ARG002",  # Unused arguments in callbacks/hooks are normal
+    "BLE001",  # Catch Exception OK for pipeline error handling
+    "DTZ005",  # datetime.now() without tz is acceptable
+    "G004",    # f-strings in logging
+    "N806",    # X_test, X_train are ML conventions
+    "PLC0415", # Inline imports OK for optional dependencies
+    "PLR2004", # Magic values OK in pipeline logic
+    "PTH123",  # Path.open vs open - both acceptable
+    "RUF022",  # __all__ sorting not critical
+    "SIM102",  # Nested if statements OK for readability
+    "TC001",   # Imports used at runtime, not just type-checking
+    "TC003",   # Standard library imports used at runtime
+    "TID252",  # Relative imports cleaner within package
+    "TRY300",  # try-except-else acceptable pattern
+    "TRY400",  # logging.error vs logging.exception - both acceptable
+    "TRY401",  # Logging exception with message is informative
 ]
 # Existing codebase - more permissive for pre-Phase 2 code
 "src/core/experiments/**/*.py" = ["W293", "G004", "G101", "ANN", "TID252", "BLE001", "UP035", "UP045", "UP006", "DTZ005", "PLR2004", "TRY300", "ARG002", "ANN401", "SIM102", "LOG014", "EM102", "TRY003"]
@@ -188,7 +214,7 @@ ignore = [
 "src/core/experiment_tracking/**/*.py" = ["ANN", "BLE001", "G004", "S108", "RET504", "LOG015", "TRY401"]
 "src/core/experiments/tracking.py" = ["PLC0415", "TRY401"]
 "src/core/logging/**/*.py" = ["W291", "W292"]
-"src/ui/**/*.py" = ["W293", "W291", "W292", "ANN", "G004", "PLR2004", "RUF010", "G201", "F841", "PERF401", "BLE001", "TRY400", "C408", "UP035", "UP045", "I001", "F401", "ARG002", "ANN401", "DTZ005", "Q000", "S110", "PLC0415", "PIE790", "RUF022", "A002", "RUF012", "PD003", "RUF005", "RUF001", "PD011", "SIM108", "PLW3301", "PLR1714", "N803", "N806"]
+"src/ui/**/*.py" = ["W293", "W291", "W292", "ANN", "G004", "PLR2004", "RUF010", "G201", "F841", "PERF401", "PERF102", "BLE001", "TRY400", "TRY401", "C408", "UP035", "UP045", "I001", "F401", "ARG001", "ARG002", "ANN401", "DTZ005", "Q000", "S110", "PLC0415", "PIE790", "RUF022", "A002", "RUF012", "PD003", "RUF005", "RUF001", "PD011", "SIM108", "PLW3301", "PLR1714", "N803", "N806", "B007"]
 
 [tool.ruff.format]
 quote-style = "double"

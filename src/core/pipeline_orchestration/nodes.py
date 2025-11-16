@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -22,10 +22,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 from src.core.logging import get_logger
-
-if TYPE_CHECKING:
-    from numpy.typing import NDArray
-
 
 logger = get_logger(__name__)
 
@@ -286,9 +282,7 @@ class DataPreprocessorNode(BaseNode):
                 operations_applied.append(f"drop_missing: {rows_dropped} rows")
 
             elif operation == "fill_missing_mean":
-                numeric_cols = processed_data.select_dtypes(
-                    include=[np.number]
-                ).columns
+                numeric_cols = processed_data.select_dtypes(include=[np.number]).columns
                 processed_data[numeric_cols] = processed_data[numeric_cols].fillna(
                     processed_data[numeric_cols].mean()
                 )
@@ -335,7 +329,9 @@ class TrainTestSplitNode(BaseNode):
             node_id=node_id,
             node_type=NodeType.DATA_PREPROCESSOR,
             name=kwargs.get("name", "Train-Test Split"),
-            description=kwargs.get("description", "Split data into train and test sets"),
+            description=kwargs.get(
+                "description", "Split data into train and test sets"
+            ),
             config=config,
         )
 
@@ -401,7 +397,9 @@ class FeatureScalerNode(BaseNode):
             node_id=node_id,
             node_type=NodeType.FEATURE_ENGINEER,
             name=kwargs.get("name", "Feature Scaler"),
-            description=kwargs.get("description", "Scale features using StandardScaler"),
+            description=kwargs.get(
+                "description", "Scale features using StandardScaler"
+            ),
             config=kwargs,
         )
         self.scaler = StandardScaler()
@@ -482,7 +480,11 @@ class ModelTrainerNode(BaseNode):
             model_params: Parameters for the model
             **kwargs: Additional configuration parameters
         """
-        config = {"model_type": model_type, "model_params": model_params or {}, **kwargs}
+        config = {
+            "model_type": model_type,
+            "model_params": model_params or {},
+            **kwargs,
+        }
         super().__init__(
             node_id=node_id,
             node_type=NodeType.MODEL_TRAINER,

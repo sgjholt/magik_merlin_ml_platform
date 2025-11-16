@@ -136,7 +136,9 @@ class PipelineManagementPanel:
         self.add_node_button.on_click(self._on_add_node)
 
         # Pipeline nodes display
-        self.pipeline_nodes_text = pn.pane.Markdown("**Pipeline Nodes:**\n\nNo nodes added yet.")
+        self.pipeline_nodes_text = pn.pane.Markdown(
+            "**Pipeline Nodes:**\n\nNo nodes added yet."
+        )
 
         # Execution section
         self.execute_button = pn.widgets.Button(
@@ -230,7 +232,9 @@ class PipelineManagementPanel:
                         "updated_at": "Updated",
                     }
                 )
-                self.pipeline_table.value = df[["ID", "Name", "Nodes", "Status", "Updated"]]
+                self.pipeline_table.value = df[
+                    ["ID", "Name", "Nodes", "Status", "Updated"]
+                ]
             else:
                 self.pipeline_table.value = pd.DataFrame(
                     columns=["ID", "Name", "Nodes", "Status", "Updated"]
@@ -294,7 +298,9 @@ class PipelineManagementPanel:
             description="",
         )
 
-        self.status_text.object = "**New pipeline created.** Add nodes and configure settings."
+        self.status_text.object = (
+            "**New pipeline created.** Add nodes and configure settings."
+        )
         self.logger.info("Created new pipeline")
 
     def _on_add_node(self, event: Any) -> None:
@@ -423,8 +429,12 @@ class PipelineManagementPanel:
                 progress_callback=on_progress,
             )
 
-            self.status_text.object = f"**Pipeline execution started.** Status: {result.status.value}"
-            self.logger.info(f"Started pipeline execution: {self.selected_pipeline.name}")
+            self.status_text.object = (
+                f"**Pipeline execution started.** Status: {result.status.value}"
+            )
+            self.logger.info(
+                f"Started pipeline execution: {self.selected_pipeline.name}"
+            )
 
             # Start monitoring thread
             import threading

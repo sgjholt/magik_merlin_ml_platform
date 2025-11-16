@@ -17,7 +17,7 @@ from typing import Any
 from src.core.logging import get_logger
 
 from .executor import ExecutionResult
-from .pipeline import Pipeline, PipelineStatus
+from .pipeline import Pipeline
 
 logger = get_logger(__name__)
 
@@ -289,7 +289,9 @@ class PipelineStorage:
 
         if current_path.exists():
             shutil.copy2(current_path, version_path)
-            self.logger.info(f"Created version {version_str} of pipeline {pipeline.name}")
+            self.logger.info(
+                f"Created version {version_str} of pipeline {pipeline.name}"
+            )
 
     def list_versions(self, pipeline_id: str) -> list[PipelineVersion]:
         """
@@ -315,7 +317,9 @@ class PipelineStorage:
                 version = PipelineVersion(
                     version=version_file.stem,
                     created_at=datetime.fromisoformat(
-                        data.get("metadata", {}).get("updated_at", datetime.now().isoformat())
+                        data.get("metadata", {}).get(
+                            "updated_at", datetime.now().isoformat()
+                        )
                     ),
                     created_by=data.get("metadata", {}).get("created_by", "unknown"),
                     description=data.get("description", ""),
@@ -364,9 +368,7 @@ class PipelineStorage:
 
         # Load and return restored pipeline
         pipeline = Pipeline.load(current_path)
-        self.logger.info(
-            f"Restored pipeline {pipeline_id} to version {version}"
-        )
+        self.logger.info(f"Restored pipeline {pipeline_id} to version {version}")
         return pipeline
 
     def _update_metadata(self, pipeline: Pipeline) -> None:
