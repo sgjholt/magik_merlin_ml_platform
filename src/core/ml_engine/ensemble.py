@@ -19,7 +19,6 @@ Example:
     >>> predictions = ensemble.predict(X_test)
 """
 
-
 import numpy as np
 
 from src.core.ml_engine.base import BaseMLModel
