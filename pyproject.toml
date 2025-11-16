@@ -8,13 +8,13 @@ dynamic = ["version"]
 description = "A comprehensive Panel-based ML experimentation platform"
 authors = [{ name = "ML Platform Team" }]
 license = { text = "MIT" }
-requires-python = ">=3.12"
-# Core dependencies (PyCaret compatible versions)
+requires-python = ">=3.13"
+# Core dependencies (Python 3.13 compatible)
 dependencies = [
-    "numpy>=1.21,<1.27",
-    "pandas>=2.0,<2.2",
-    "scikit-learn>=1.3,<1.5",
-    "scipy>=1.9,<=1.11.4",
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "scikit-learn>=1.5",
+    "scipy>=1.11",
     "pyarrow>=12.0.0",
     "panel>=1.4.0",
     "bokeh>=3.2.0",
@@ -38,8 +38,9 @@ dev = [
     "pytest-cov>=4.0.0",
     "pytest-mock>=3.10.0",
     "pytest-asyncio>=0.21.0",
-    "sphinx>=6.0.0",
-    "sphinx-rtd-theme>=1.2.0",
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
     "python-semantic-release>=8.0.0",
 ]
 
@@ -56,15 +57,17 @@ cloud = [
     "google-cloud-storage>=2.10.0",
 ]
 
-# ML dependencies (Phase 2)
+# ML dependencies (Phase 2) - Custom ML Engine
 ml = [
-    "pycaret>=3.3.0",
     "lightgbm>=4.0.0",
     "xgboost>=2.0.0",
     "catboost>=1.2.0",
+    "torch>=2.0.0",
+    "lightning>=2.0.0",
+    "optuna>=3.0.0",
     "imbalanced-learn>=0.11.0",
-    "yellowbrick>=1.5.0",
     "shap>=0.44.0",
+    "scikit-optimize>=0.9.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -73,7 +76,7 @@ where = ["src"]
 # Ruff configuration
 [tool.ruff]
 line-length = 88
-target-version = "py312"
+target-version = "py313"
 
 [tool.ruff.lint]
 # Enable comprehensive rule set
@@ -126,29 +129,66 @@ select = [
     "RUF",  # Ruff-specific rules
 ]
 
+# Globally ignored rules (apply to all files)
+# See docs/development/code-quality.md for detailed explanations
 ignore = [
     "E501",    # Line too long (handled by formatter)
-    "ANN101",  # Missing type annotation for self
-    "ANN102",  # Missing type annotation for cls
+    "ANN101",  # Missing type annotation for self (implicit in Python)
+    "ANN102",  # Missing type annotation for cls (implicit in Python)
     "COM812",  # Trailing comma missing (conflicts with formatter)
     "ISC001",  # Implicit string concatenation (conflicts with formatter)
-    "T201",    # Print statements (allowed in our case)
-    "S101",    # Use of assert (common in tests)
-    "PTH123",  # Path.open should be used instead of built-in open (not always applicable)
-    "FBT001",  # Boolean positional arg in function definition
-    "FBT002",  # Boolean default value in function definition
-    "PLR0913", # Too many arguments in function definition
-    "PLR0912", # Too many branches
-    "PLR0915", # Too many statements
+    "T201",    # Print statements (allowed for CLI output and debugging)
+    "S101",    # Use of assert (common and acceptable in tests)
+    "PTH123",  # Path.open vs built-in open (not always applicable)
+    "FBT001",  # Boolean positional arg (acceptable for sklearn compatibility)
+    "FBT002",  # Boolean default value (acceptable for sklearn compatibility)
+    "PLR0913", # Too many arguments (ML models often need many hyperparameters)
+    "PLR0912", # Too many branches (acceptable for model selection logic)
+    "PLR0915", # Too many statements (acceptable for comprehensive pipelines)
 ]
 
+# Per-file ignore rules
+# See docs/development/code-quality.md for detailed explanations of ML-specific rules
 [tool.ruff.lint.per-file-ignores]
+# Test files - relaxed rules for test code
 "tests/**/*.py" = [
-    "S101",    # Use of assert
+    "S101",    # Use of assert (standard in pytest)
+    "S104",    # Binding to all interfaces OK in tests
+    "S108",    # /tmp usage acceptable in tests
     "ANN",     # Type annotations not required in tests
-    "PLR2004", # Magic value used in comparison
-    "SLF001",  # Private member accessed
+    "PLR2004", # Magic values acceptable in test assertions
+    "SLF001",  # Private member access needed for testing internals
+    "E402",    # Module imports after code (common in test setup)
+    "F401",    # Unused imports (often for availability checks)
+    "F841",    # Unused variables (test fixtures)
+    "FBT003",  # Boolean positional args OK in tests
+    "PLC0415", # Inline imports OK for conditional test logic
+    "N803",    # X argument name OK in ML tests
+    "N806",    # X variable name OK in ML tests
+    "ARG002",  # Unused fixtures are normal in pytest
+    "BLE001",  # Catch Exception OK in tests
+    "PD003",   # .isnull vs .isna - both work
+    "PD011",   # .values vs .to_numpy - both work
+    "SIM117",  # Nested with statements OK in tests
 ]
+# ML Engine - follows ML/data science conventions (sklearn, pandas, numpy)
+"src/core/ml_engine/**/*.py" = [
+    "N803",    # IMPORTANT: X (features) and y (targets) are universal ML conventions
+    "N806",    # IMPORTANT: Uppercase X follows sklearn, pandas, numpy standards
+    "ANN401",  # typing.Any needed - ML functions accept many types (DataFrame, ndarray, etc.)
+    "TID252",  # Relative imports (.base, .classical) cleaner within ml_engine package
+    "G004",    # f-strings in logging - modern Python 3.13+ style, more readable
+    "PLR2004", # Magic numbers are domain knowledge (e.g., n_classes > 2 = multiclass)
+    "TC001",   # Imports used at runtime, not just type-checking
+    "TC002",   # Imports used at runtime, not just type-checking
+]
+# Existing codebase - more permissive for pre-Phase 2 code
+"src/core/experiments/**/*.py" = ["W293", "G004", "G101", "ANN", "TID252", "BLE001", "UP035", "UP045", "UP006", "DTZ005", "PLR2004", "TRY300", "ARG002", "ANN401", "SIM102", "LOG014", "EM102", "TRY003"]
+"src/core/data_sources/**/*.py" = ["W293", "TID252", "BLE001", "TRY300", "TRY003", "EM101", "EM102", "B904", "ANN003", "ARG002", "SIM102", "G201", "RET504", "RUF059"]
+"src/core/experiment_tracking/**/*.py" = ["ANN", "BLE001", "G004", "S108", "RET504", "LOG015", "TRY401"]
+"src/core/experiments/tracking.py" = ["PLC0415", "TRY401"]
+"src/core/logging/**/*.py" = ["W291", "W292"]
+"src/ui/**/*.py" = ["W293", "W291", "W292", "ANN", "G004", "PLR2004", "RUF010", "G201", "F841", "PERF401", "BLE001", "TRY400", "C408", "UP035", "UP045", "I001", "F401", "ARG002", "ANN401", "DTZ005", "Q000", "S110", "PLC0415", "PIE790", "RUF022", "A002", "RUF012", "PD003", "RUF005", "RUF001", "PD011", "SIM108", "PLW3301", "PLR1714", "N803", "N806"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -216,7 +256,7 @@ version_scheme = "python-simplified-semver"
 local_scheme = "node-and-date"
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

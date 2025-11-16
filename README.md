@@ -1,181 +1,203 @@
-# ML Experimentation Platform
+# Magik Merlin ML Platform
 
-A comprehensive Panel-based machine learning experimentation platform that integrates PyCaret, MLflow, and various data sources for end-to-end ML workflows.
+A modern Python ML experimentation platform with a custom ML engine, Panel UI, and MLflow integration. Built for Python 3.13+ with no dependency lock-in.
 
-## 🚀 Features
+[![CI](https://github.com/sgjholt/magik_merlin_ml_platform/workflows/CI/badge.svg)](https://github.com/sgjholt/magik_merlin_ml_platform/actions)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- 📊 **Data Management**: Connect to multiple data sources (Local files, Snowflake, AWS S3)
-- 🔬 **ML Experimentation**: Automated ML workflows with PyCaret integration  
-- 📈 **Experiment Tracking**: Complete experiment lifecycle management with MLflow
-- 🎯 **Model Evaluation**: Comprehensive model comparison and visualization
-- 🚀 **Model Deployment**: Deploy and monitor models in production
+## Features
 
-## 📋 Requirements
+- 🔬 **Custom ML Engine** - XGBoost, LightGBM, CatBoost with sklearn compatibility
+- 🤖 **AutoML** - Automated model comparison and hyperparameter optimization
+- 📊 **Interactive UI** - Panel-based web interface
+- 📈 **Experiment Tracking** - MLflow integration
+- 🚀 **Modern Python** - Python 3.13+ with latest features
 
-- Python 3.8+
-- Virtual environment (recommended: `uv venv`)
-- Optional: MLflow server for experiment tracking
+## Quick Start
 
-## ⚡ Quick Start
-
-### 1. Environment Setup
 ```bash
-# Install dependencies with uv
+# Install with ML support
+uv sync --extra ml
+
+# Run the platform
+./run.sh dev
+
+# Platform available at http://localhost:5006
+```
+
+## Documentation
+
+📚 **[Read the full documentation](https://sgjholt.github.io/magik_merlin_ml_platform/)** (coming soon)
+
+Or build locally:
+
+```bash
+# Install docs dependencies
 uv sync --extra dev
 
-# Setup platform (creates directories, starts MLflow)
-python setup_platform.py setup
+# Serve documentation locally
+mkdocs serve
+
+# View at http://localhost:8000
 ```
 
-### 2. Start the Platform
+### Quick Links
+
+- [Installation Guide](docs/getting-started/installation.md)
+- [Quick Start Tutorial](docs/getting-started/quick-start.md)
+- [ML Engine Guide](docs/user-guide/ml-engine.md)
+- [Development Guide](docs/development/code-quality.md)
+- [API Reference](docs/api/ml-engine.md)
+- [Roadmap](docs/roadmap.md)
+
+## Why This Platform?
+
+### No Dependency Lock-In
+
+We built a **custom ML engine** instead of using PyCaret because:
+- ❌ PyCaret 3.3 only supports Python 3.9-3.11
+- ✅ Our engine supports Python 3.13+ with modern features
+- ✅ Install only what you need (XGBoost, LightGBM, or CatBoost)
+- ✅ Full control over ML workflows
+
+### Sklearn Compatible
+
+```python
+from src.core.ml_engine import AutoMLPipeline
+
+# Works like any sklearn model
+pipeline = AutoMLPipeline(task_type="classification")
+results = pipeline.compare_models(X, y, cv=5)
+best_model = pipeline.get_best_model()
+predictions = best_model.predict(X_new)
+```
+
+### Production Ready
+
+- ✅ 92 comprehensive tests (>90% coverage)
+- ✅ Strict code quality (ruff + mypy)
+- ✅ Automatic CI/CD with GitHub Actions
+- ✅ Semantic versioning
+
+## Requirements
+
+- **Python 3.13+** - Modern language features
+- **uv** - Fast package manager (or pip)
+- Optional: MLflow server for tracking
+
+## Installation
+
+### Using uv (Recommended)
+
 ```bash
-# Start ML Platform (includes MLflow controls in UI)
-python main.py
+# Clone repository
+git clone https://github.com/sgjholt/magik_merlin_ml_platform.git
+cd magik_merlin_ml_platform
 
-# Platform will be available at: http://localhost:5006
+# Install with ML engine
+uv sync --extra ml
+
+# Setup platform
+./run.sh setup
 ```
 
-### 3. MLflow Server Management
+### Using pip
 
-**From UI (Recommended):**
-- Use the **🚀 Start MLflow** / **🛑 Stop MLflow** buttons in the sidebar
-- Click **📊 MLflow UI** to open the tracking interface
-- Status indicator shows real-time connection status
-
-**From Command Line:**
 ```bash
-./scripts/mlflow.sh start     # Start MLflow server
-./scripts/mlflow.sh status    # Check server status
-./scripts/mlflow.sh stop      # Stop server  
-./scripts/mlflow.sh ui        # Open web interface
-./scripts/mlflow.sh restart   # Restart server
+# Create virtual environment
+python3.13 -m venv .venv
+source .venv/bin/activate
+
+# Install
+pip install -e ".[ml]"
 ```
 
-## 📁 Project Structure
+See [Installation Guide](docs/getting-started/installation.md) for details.
+
+## Development
+
+### Running Tests
+
+```bash
+./run.sh test              # All tests
+./run.sh test-fast         # Unit tests only
+./run.sh coverage          # With coverage report
+```
+
+### Code Quality
+
+```bash
+./run.sh lint              # Check code quality
+./run.sh format            # Auto-format code
+```
+
+### Building Documentation
+
+```bash
+# Serve locally
+mkdocs serve
+
+# Build static site
+mkdocs build
+```
+
+See [Development Guide](docs/development/code-quality.md) for detailed standards.
+
+## Project Structure
 
 ```
 ml_platform/
-├── src/                         # Source code
-│   ├── core/                    # Core ML functionality
-│   │   ├── data_sources/        # Data connectors (Local, Snowflake, AWS)
-│   │   ├── experiment_tracking/ # MLflow integration
-│   │   ├── ml_engine/          # PyCaret ML workflows (Phase 2)
-│   │   └── pipeline_orchestration/ # Workflow management (Phase 3)
-│   ├── ui/                      # User interface
-│   │   ├── panels/             # Main UI panels
-│   │   ├── components/         # Reusable components
-│   │   └── visualizations/     # Charts and plots
-│   ├── config/                 # Configuration management
-│   └── utils/                  # Utility functions
-├── tests/                      # Test suite
-│   ├── unit/                   # Unit tests (fast)
-│   └── integration/            # Integration tests
-├── data/                       # Data storage
-├── docs/                       # Documentation
-├── main.py                     # Application entry point
-└── pyproject.toml              # Dependencies and project config
+├── src/
+│   ├── core/
+│   │   ├── ml_engine/          # Custom ML Engine ✅
+│   │   ├── data_sources/       # Data connectors
+│   │   └── experiments/        # MLflow integration
+│   └── ui/                     # Panel-based UI
+├── tests/                      # 92 tests, >90% coverage
+├── docs/                       # MkDocs documentation
+├── examples/                   # Demo scripts & notebooks
+└── pyproject.toml              # Project configuration
 ```
 
-## 🎯 Usage Guide
+## Roadmap
 
-### 📊 Data Management
-1. **Connect**: Choose data source (Local Files, Snowflake, AWS S3)
-2. **Configure**: Set connection parameters
-3. **Load**: Select and load your dataset
-4. **Explore**: Preview data and view profiling statistics
+### Phase 2: Core ML Functionality ✅ Complete
 
-### 🔬 Experimentation (Coming in Phase 2)
-1. **Setup**: Choose ML task type and target variable
-2. **Configure**: Select features and models to compare
-3. **Run**: Start experiment and monitor progress
-4. **Analyze**: Review results and performance metrics
+- [x] Custom ML Engine (XGBoost, LightGBM, CatBoost)
+- [x] AutoML Pipeline with Optuna
+- [x] 92 comprehensive tests
+- [x] Complete documentation
+- [x] MLflow integration
 
-### 📈 Model Evaluation (Coming in Phase 2)
-1. **Compare**: Select models for comparison
-2. **Visualize**: Choose charts (ROC curves, feature importance)
-3. **Analyze**: Review detailed performance metrics
-4. **Select**: Identify best performing models
+### Phase 3: Pipeline System (Planned)
 
-### 🚀 Deployment (Coming in Phase 3)
-1. **Choose**: Select trained model for deployment
-2. **Configure**: Set deployment environment and settings
-3. **Deploy**: Launch model endpoint
-4. **Monitor**: Track performance and usage
+- [ ] Visual pipeline builder
+- [ ] Pipeline orchestration
+- [ ] Deep learning integration (PyTorch Lightning)
+- [ ] Advanced visualizations
 
-## ⚙️ Installation Options
-
-### Core Installation (Recommended)
-```bash
-make install  # Essential dependencies only
-```
-
-### Development Installation
-```bash
-make install-dev  # Includes testing and code quality tools
-```
-
-### Cloud Services Installation
-```bash
-make install-cloud  # Adds Snowflake, AWS, MLflow support
-```
-
-### ML Features Installation (Phase 2)
-```bash
-make install-ml  # Adds PyCaret for automated ML workflows
-```
-
-### Full Installation
-```bash
-make install-all  # Everything including all optional dependencies
-```
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-make test
-
-# Quick unit tests only
-make test-fast
-
-# Integration tests
-make test-integration
-
-# Coverage report
-make test-coverage
-```
-
-## 🛠️ Development
-
-### Code Quality
-```bash
-make format  # Format code with black
-make lint    # Check code quality
-```
-
-### Environment Setup
-```bash
-make setup-dev  # Install dev tools and git hooks
-```
-
-## Architecture
-
-The platform follows a modular architecture:
-
-- **Data Layer**: Extensible data source connectors
-- **ML Engine**: PyCaret integration for automated ML
-- **Tracking Layer**: MLflow for experiment management
-- **UI Layer**: Panel-based interactive dashboard
-- **Orchestration**: Custom pipeline execution engine
+See [full roadmap](docs/roadmap.md) for details.
 
 ## Contributing
 
+We welcome contributions! See [Contributing Guide](docs/development/contributing.md).
+
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+3. Make your changes with tests
+4. Submit a pull request
+
+## Community
+
+- **GitHub**: [Issues](https://github.com/sgjholt/magik_merlin_ml_platform/issues) | [Discussions](https://github.com/sgjholt/magik_merlin_ml_platform/discussions)
+- **Documentation**: [Full docs](https://sgjholt.github.io/magik_merlin_ml_platform/)
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+**Made with ❤️ using Python 3.13+, Panel, and modern ML libraries**

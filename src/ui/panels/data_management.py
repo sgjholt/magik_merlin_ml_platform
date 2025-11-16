@@ -88,7 +88,7 @@ class DataManagementPanel:
             self.data_profile,
         )
 
-    def _on_datasource_type_change(self, event: Any) -> None:  # noqa: ANN401
+    def _on_datasource_type_change(self, event: Any) -> None:
         self.connection_inputs.clear()
 
         if event.new == "Local Files":
@@ -142,7 +142,7 @@ class DataManagementPanel:
                 params[key] = widget.value
         return params
 
-    def _on_connect(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_connect(self, event: Any) -> None:
         try:
             params = self._get_connection_params()
 
@@ -186,7 +186,7 @@ class DataManagementPanel:
                     "<span style='color: red;'>●</span> Connection Failed"
                 )
 
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             self.connection_status.object = (
                 f"<span style='color: red;'>●</span> Error: {e!s}"
             )
@@ -196,11 +196,11 @@ class DataManagementPanel:
         msg = f"Unsupported or unavailable datasource: {datasource_type}"
         raise ValueError(msg)
 
-    def _on_table_select(self, event: Any) -> None:  # noqa: ANN401
+    def _on_table_select(self, event: Any) -> None:
         if event.new:
             self.load_button.disabled = False
 
-    def _on_load_data(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_load_data(self, event: Any) -> None:
         if not self.current_datasource or not self.table_select.value:
             print("No datasource or table selected")
             return
@@ -231,7 +231,7 @@ class DataManagementPanel:
                 )
             self.data_preview.object = preview_data
 
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             # logger.error(f"Error updating data preview: {e!s}")  # noqa: ERA001
             self.data_preview.object = pd.DataFrame(
                 {"Error": [f"Failed to load data preview: {e!s}"]}

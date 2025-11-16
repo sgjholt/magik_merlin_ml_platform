@@ -22,7 +22,7 @@ class TestExperimentTracker:
         """Test initialization when MLflow is not available"""
         with patch("src.core.experiments.tracking.MLFLOW_AVAILABLE", False):
             tracker = ExperimentTracker()
-            assert tracker.tracking_uri == "http://localhost:5000"
+            assert tracker.tracking_uri == "http://127.0.0.1:5000"
             assert tracker.experiment_name == "ml-platform-experiments"
             assert tracker.active_run is None
 
@@ -30,13 +30,16 @@ class TestExperimentTracker:
     def test_initialization_with_mlflow(self):
         """Test initialization when MLflow is available"""
         with patch("src.core.experiments.tracking.mlflow") as mock_mlflow:
-            tracker = ExperimentTracker()
-            mock_mlflow.set_tracking_uri.assert_called_once_with(
-                "http://localhost:5000"
-            )
-            mock_mlflow.set_experiment.assert_called_once_with(
-                "ml-platform-experiments"
-            )
+            with patch.object(
+                ExperimentTracker, "_check_mlflow_server", return_value=True
+            ):
+                tracker = ExperimentTracker()
+                mock_mlflow.set_tracking_uri.assert_called_once_with(
+                    "http://127.0.0.1:5000"
+                )
+                mock_mlflow.set_experiment.assert_called_once_with(
+                    "ml-platform-experiments"
+                )
 
     def test_custom_initialization(self):
         """Test initialization with custom parameters"""
@@ -61,12 +64,15 @@ class TestExperimentTracker:
             mock_run = Mock()
             mock_mlflow.start_run.return_value = mock_run
 
-            tracker = ExperimentTracker()
-            result = tracker.start_run("test-run")
+            with patch.object(
+                ExperimentTracker, "_check_mlflow_server", return_value=True
+            ):
+                tracker = ExperimentTracker()
+                result = tracker.start_run("test-run")
 
-            assert result is True
-            assert tracker.active_run == mock_run
-            mock_mlflow.start_run.assert_called_once_with(run_name="test-run")
+                assert result is True
+                assert tracker.active_run == mock_run
+                mock_mlflow.start_run.assert_called_once_with(run_name="test-run")
 
     def test_end_run_without_active_run(self):
         """Test end_run without active run"""
@@ -180,15 +186,18 @@ class TestExperimentTracker:
     def test_log_model_non_sklearn(self):
         """Test log_model with non-sklearn model"""
         with patch("src.core.experiments.tracking.mlflow") as mock_mlflow:
-            tracker = ExperimentTracker()
-            tracker.active_run = Mock()
+            with patch.object(
+                ExperimentTracker, "_check_mlflow_server", return_value=True
+            ):
+                tracker = ExperimentTracker()
+                tracker.active_run = Mock()
 
-            # Mock non-sklearn model
-            model = Mock()
+                # Mock non-sklearn model (no fit/predict methods)
+                model = Mock(spec=[])  # Empty spec means no methods
 
-            tracker.log_model(model, "other_model")
+                tracker.log_model(model, "other_model")
 
-            mock_mlflow.log_param.assert_called_once()
+                mock_mlflow.log_param.assert_called_once()
 
     def test_is_active_without_mlflow(self):
         """Test is_active when MLflow is not available"""
@@ -204,9 +213,13 @@ class TestExperimentTracker:
     @pytest.mark.skipif(not MLFLOW_AVAILABLE, reason="MLflow not installed")
     def test_is_active_with_run(self):
         """Test is_active with active run"""
-        tracker = ExperimentTracker()
-        tracker.active_run = Mock()
-        assert tracker.is_active() is True
+        with patch("src.core.experiments.tracking.mlflow") as mock_mlflow:
+            with patch.object(
+                ExperimentTracker, "_check_mlflow_server", return_value=True
+            ):
+                tracker = ExperimentTracker()
+                tracker.active_run = Mock()
+                assert tracker.is_active() is True
 
 
 class TestMLflowIntegrationFallbacks:

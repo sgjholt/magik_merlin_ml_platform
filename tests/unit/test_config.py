@@ -19,13 +19,13 @@ class TestSettings:
         """Test default settings values"""
         settings = Settings()
 
-        assert settings.mlflow_tracking_uri == "http://localhost:5000"
+        assert settings.mlflow_tracking_uri == "http://127.0.0.1:5000"
         assert settings.mlflow_experiment_name == "ml-platform-experiments"
         assert settings.aws_default_region == "us-east-1"
         assert settings.redis_host == "localhost"
         assert settings.redis_port == 6379
         assert settings.redis_db == 0
-        assert settings.app_host == "0.0.0.0"
+        assert settings.app_host == "127.0.0.1"
         assert settings.app_port == 5006
         assert settings.debug is True
 

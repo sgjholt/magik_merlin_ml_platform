@@ -241,14 +241,18 @@ class TestLocalFileDataSource:
         df = datasource.load_data("sample.csv")
         profile = datasource.get_data_profile(df)
 
+        # Check that all expected keys are present
         assert "shape" in profile
-        assert "columns" in profile
-        assert "dtypes" in profile
+        assert "schema" in profile
         assert "null_counts" in profile
         assert "memory_usage" in profile
 
-        assert profile["shape"] == df.shape
-        assert profile["columns"] == list(df.columns)
+        # Verify shape structure (dict with rows and columns)
+        assert profile["shape"]["rows"] == df.shape[0]
+        assert profile["shape"]["columns"] == df.shape[1]
+
+        # Verify schema contains all columns
+        assert set(profile["schema"].keys()) == set(df.columns)
 
     def test_save_data(self, test_data_dir, sample_dataframe):
         """Test saving data functionality"""

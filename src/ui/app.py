@@ -134,7 +134,7 @@ class MLPlatformApp:
 
             **Core capabilities:**
 
-            • **PyCaret Integration** - Automated ML workflows
+            • **Custom ML Engine** - XGBoost, LightGBM, CatBoost with AutoML
             • **MLflow Tracking** - Experiment management and versioning
             • **Multiple Data Sources** - Files, cloud, databases
             • **Interactive Visualizations** - Rich charts
@@ -225,12 +225,12 @@ class MLPlatformApp:
         """Callback when an experiment is completed"""
         self.session_stats["experiments_run"] += 1
         # Assume each experiment trains multiple models
-        self.session_stats[
-            "models_trained"
-        ] += 3  # Average number of models per experiment
+        self.session_stats["models_trained"] += (
+            3  # Average number of models per experiment
+        )
         self._update_session_stats()
 
-    def serve(  # noqa: ANN201
+    def serve(
         self,
         port: int = 5006,
         *,
@@ -265,7 +265,7 @@ class MLPlatformApp:
             self.stop_mlflow_button.disabled = True
             self.mlflow_ui_button.disabled = True
 
-    def _on_start_mlflow(self, event: any) -> None:  # noqa: ARG002
+    def _on_start_mlflow(self, event: any) -> None:
         """Start MLflow server"""
         self.logger.info("Starting MLflow server from UI")
 
@@ -305,7 +305,7 @@ class MLPlatformApp:
         # Start in background thread to avoid blocking UI
         threading.Thread(target=start_server, daemon=True).start()
 
-    def _on_stop_mlflow(self, event: any) -> None:  # noqa: ARG002
+    def _on_stop_mlflow(self, event: any) -> None:
         """Stop MLflow server"""
         self.logger.info("Stopping MLflow server from UI")
 
@@ -323,7 +323,7 @@ class MLPlatformApp:
             msg = f"Error stopping MLflow server: {e!s}"
             self.logger.exception(msg)
 
-    def _on_open_mlflow_ui(self, event: any) -> None:  # noqa: ARG002
+    def _on_open_mlflow_ui(self, event: any) -> None:
         """Open MLflow UI in browser"""
         self.logger.info("Opening MLflow UI")
 

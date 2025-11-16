@@ -37,14 +37,12 @@ __all__ = [
     "InteractiveVisualization",
     "PlotTheme",
     "create_empty_figure",
-
     # Data exploration
     "DataOverviewVisualization",
     "DistributionVisualization",
     "CorrelationVisualization",
     "MissingDataVisualization",
     "TimeSeriesVisualization",
-
     # Model evaluation
     "ModelComparisonVisualization",
     "ROCCurveVisualization",
@@ -53,10 +51,9 @@ __all__ = [
     "FeatureImportanceVisualization",
     "LearningCurveVisualization",
     "RegressionVisualization",
-
     # Experiment tracking
     "ExperimentHistoryVisualization",
     "ExperimentComparisonVisualization",
     "ExperimentMetricsVisualization",
-    "TrainingProgressVisualization"
+    "TrainingProgressVisualization",
 ]

@@ -194,7 +194,7 @@ class DeploymentPanel:
             }
             self.endpoint_info.object = endpoint_info
 
-    def _on_deploy(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_deploy(self, event: Any) -> None:
         """Deploy the selected model"""
         if not self.model_select.value or not self.deployment_name.value:
             self._log_message("Error: Please select a model and enter deployment name")
@@ -234,7 +234,7 @@ class DeploymentPanel:
         # Update endpoint info with live endpoint
         self._update_live_endpoint_info()
 
-    def _on_undeploy(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_undeploy(self, event: Any) -> None:
         """Undeploy the current deployment"""
         self.deploy_button.disabled = False
         self.undeploy_button.disabled = True
@@ -256,7 +256,7 @@ class DeploymentPanel:
 
         self._log_message("Undeployment completed")
 
-    def _on_test_endpoint(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_test_endpoint(self, event: Any) -> None:
         """Test the deployed endpoint"""
         self._log_message("Testing endpoint...")
 
