@@ -289,6 +289,24 @@ disallow_untyped_defs = true
 show_error_codes = true
 strict = true
 
+[tool.pytest.ini_options]
+markers = [
+    "requires_xgboost: Tests that require XGBoost (install with: uv sync --extra ml)",
+    "requires_lightgbm: Tests that require LightGBM (install with: uv sync --extra ml)",
+    "requires_catboost: Tests that require CatBoost (install with: uv sync --extra ml)",
+    "requires_pytorch: Tests that require PyTorch/Lightning (install with: uv sync --extra ml)",
+    "requires_ml: Tests that require any ML library (install with: uv sync --extra ml)",
+]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
+
 [dependency-groups]
 dev = [
     "python-semantic-release>=9.21.1",

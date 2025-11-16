@@ -9,6 +9,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+# Import markers from conftest
+from conftest import requires_xgboost
+
 from src.core.pipeline_orchestration.nodes import (
     DataLoaderNode,
     DataPreprocessorNode,
@@ -228,6 +231,7 @@ class TestFeatureScalerNode:
 class TestModelTrainerNode:
     """Tests for ModelTrainerNode."""
 
+    @requires_xgboost
     def test_train_xgboost_classifier(self):
         """Test training XGBoost classifier."""
         # Create simple dataset
@@ -263,6 +267,7 @@ class TestModelTrainerNode:
 class TestModelEvaluatorNode:
     """Tests for ModelEvaluatorNode."""
 
+    @requires_xgboost
     def test_evaluate_model(self):
         """Test model evaluation."""
         # Create simple dataset and train model
@@ -299,6 +304,7 @@ class TestModelEvaluatorNode:
 class TestModelSaverNode:
     """Tests for ModelSaverNode."""
 
+    @requires_xgboost
     def test_save_model(self, tmp_path):
         """Test saving model to disk."""
         # Create and train a simple model

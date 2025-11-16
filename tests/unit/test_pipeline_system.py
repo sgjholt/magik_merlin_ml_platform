@@ -9,6 +9,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+# Import markers from conftest
+from conftest import requires_xgboost
+
 from src.core.pipeline_orchestration import (
     DataLoaderNode,
     DataPreprocessorNode,
@@ -192,6 +195,7 @@ class TestPipelineExecutor:
         assert "loader" in result.node_outputs
         assert "prep" in result.node_outputs
 
+    @requires_xgboost
     def test_execute_ml_pipeline(self, tmp_path):
         """Test executing a complete ML pipeline."""
         # Create test data
