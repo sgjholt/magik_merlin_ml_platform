@@ -102,7 +102,7 @@ class BaseMLModel(SklearnBaseEstimator, ABC):
         if isinstance(X, pd.DataFrame):
             self.feature_names_in_ = list(X.columns)
 
-    def get_params(self, deep: bool = True) -> dict[str, Any]:  # noqa: ARG002
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
         """
         Get model hyperparameters (sklearn-compatible).
 

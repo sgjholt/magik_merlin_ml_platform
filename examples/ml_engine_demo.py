@@ -21,7 +21,6 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-import numpy as np
 import pandas as pd
 from sklearn.datasets import make_classification, make_regression
 from sklearn.model_selection import train_test_split
@@ -81,14 +80,16 @@ def demo_classification():
     print_section("STEP 2: Best Model Selection")
     best_model = pipeline.get_best_model()
     print(f"✨ Best model selected: {pipeline.best_model_name}")
-    print(f"   Training score: {results.iloc[0]['cv_mean']:.4f} (±{results.iloc[0]['cv_std']:.4f})")
+    print(
+        f"   Training score: {results.iloc[0]['cv_mean']:.4f} (±{results.iloc[0]['cv_std']:.4f})"
+    )
 
     # 5. Make predictions
     print_section("STEP 3: Making Predictions")
     predictions = best_model.predict(X_test)
     probabilities = best_model.predict_proba(X_test)
 
-    print(f"📊 Test set predictions (first 10):")
+    print("📊 Test set predictions (first 10):")
     print(f"   True values:  {y_test.values[:10]}")
     print(f"   Predictions:  {predictions[:10]}")
     print(f"\n   Class 0 probabilities (first 5): {probabilities[:5, 0]}")
@@ -171,12 +172,14 @@ def demo_regression():
     # 5. Make predictions
     predictions = best_model.predict(X_test)
 
-    print(f"\n📊 Test set predictions (first 10):")
-    comparison = pd.DataFrame({
-        'True': y_test.values[:10],
-        'Predicted': predictions[:10],
-        'Error': (y_test.values[:10] - predictions[:10])
-    })
+    print("\n📊 Test set predictions (first 10):")
+    comparison = pd.DataFrame(
+        {
+            "True": y_test.values[:10],
+            "Predicted": predictions[:10],
+            "Error": (y_test.values[:10] - predictions[:10]),
+        }
+    )
     print(comparison.to_string(index=False))
 
     # Test score
@@ -226,16 +229,18 @@ def demo_individual_model():
     predictions = model.predict(X_test)
     accuracy = model.score(X_test, y_test)
 
-    print(f"   Model trained successfully!")
+    print("   Model trained successfully!")
     print(f"   Test accuracy: {accuracy:.4f}")
 
     # Get parameters
     params = model.get_params()
-    print(f"\n   Model parameters: n_estimators={params['n_estimators']}, max_depth={params['max_depth']}")
+    print(
+        f"\n   Model parameters: n_estimators={params['n_estimators']}, max_depth={params['max_depth']}"
+    )
 
     # Feature importance
     importance_df = model.get_feature_importance()
-    print(f"\n🔍 Feature importance (top 5):")
+    print("\n🔍 Feature importance (top 5):")
     print(importance_df.head(5).to_string(index=False))
 
     print("\n✅ Individual model demo completed!")
@@ -272,21 +277,26 @@ def main():
         print("✅ All demos completed successfully!")
         print("\n📚 Next Steps:")
         print("   1. Check docs/ML_ENGINE_GUIDE.md for comprehensive documentation")
-        print("   2. Explore examples/ml_engine_tutorial.ipynb for interactive examples")
+        print(
+            "   2. Explore examples/ml_engine_tutorial.ipynb for interactive examples"
+        )
         print("   3. Try with your own data!")
         print("\n🚀 Happy ML Engineering!")
 
     except ImportError as e:
-        print(f"\n❌ Error: Missing required libraries.")
+        print("\n❌ Error: Missing required libraries.")
         print(f"   {e}")
         print("\n💡 Install ML dependencies with:")
         print("   uv sync --extra ml")
         print("   # OR")
-        print("   pip install xgboost lightgbm catboost optuna scikit-learn pandas numpy")
+        print(
+            "   pip install xgboost lightgbm catboost optuna scikit-learn pandas numpy"
+        )
         sys.exit(1)
     except Exception as e:
         print(f"\n❌ Unexpected error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 

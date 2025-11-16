@@ -16,6 +16,44 @@ src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
 
+# Check for optional ML dependencies
+def _check_import(module_name: str) -> bool:
+    """Check if a module can be imported."""
+    try:
+        __import__(module_name)
+    except ImportError:
+        return False
+    else:
+        return True
+
+
+# Dependency availability flags
+HAS_XGBOOST = _check_import("xgboost")
+HAS_LIGHTGBM = _check_import("lightgbm")
+HAS_CATBOOST = _check_import("catboost")
+HAS_TORCH = _check_import("torch")
+HAS_LIGHTNING = _check_import("lightning")
+
+# Pytest markers for optional dependencies
+requires_xgboost = pytest.mark.skipif(
+    not HAS_XGBOOST, reason="XGBoost not installed (install with: uv sync --extra ml)"
+)
+requires_lightgbm = pytest.mark.skipif(
+    not HAS_LIGHTGBM, reason="LightGBM not installed (install with: uv sync --extra ml)"
+)
+requires_catboost = pytest.mark.skipif(
+    not HAS_CATBOOST, reason="CatBoost not installed (install with: uv sync --extra ml)"
+)
+requires_pytorch = pytest.mark.skipif(
+    not HAS_TORCH or not HAS_LIGHTNING,
+    reason="PyTorch/Lightning not installed (install with: uv sync --extra ml)",
+)
+requires_ml = pytest.mark.skipif(
+    not (HAS_XGBOOST or HAS_LIGHTGBM or HAS_CATBOOST),
+    reason="No ML libraries installed (install with: uv sync --extra ml)",
+)
+
+
 @pytest.fixture(scope="session")
 def test_data_dir():
     """Create a temporary directory with test data files"""

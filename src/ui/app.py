@@ -15,6 +15,7 @@ from .panels.data_management import DataManagementPanel
 from .panels.deployment import DeploymentPanel
 from .panels.experimentation import ExperimentationPanel
 from .panels.model_evaluation import ModelEvaluationPanel
+from .panels.pipeline_management import PipelineManagementPanel
 from .panels.visualization import VisualizationPanel
 
 REPO_ROOT = Path(__file__).parent.parent.parent
@@ -35,6 +36,7 @@ class MLPlatformApp:
         self.visualization_panel = VisualizationPanel(
             self.experiment_panel.experiment_manager
         )
+        self.pipeline_panel = PipelineManagementPanel()
 
         # Set up data flow between panels
         self.data_panel.data_updated_callback = self._on_data_updated
@@ -168,6 +170,7 @@ class MLPlatformApp:
             ("🔬 Experimentation", self.experiment_panel.panel),
             ("📈 Model Evaluation", self.evaluation_panel.panel),
             ("📉 Visualizations", self.visualization_panel.panel),
+            ("🔄 Pipelines", self.pipeline_panel.panel),
             ("🚀 Deployment", self.deployment_panel.panel),
             dynamic=True,
             sizing_mode="stretch_width",
