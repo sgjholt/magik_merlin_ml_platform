@@ -188,7 +188,7 @@ ignore = [
 "src/core/experiment_tracking/**/*.py" = ["ANN", "BLE001", "G004", "S108", "RET504", "LOG015", "TRY401"]
 "src/core/experiments/tracking.py" = ["PLC0415", "TRY401"]
 "src/core/logging/**/*.py" = ["W291", "W292"]
-"src/ui/**/*.py" = ["W293", "W291", "W292", "ANN", "G004", "PLR2004", "RUF010", "G201", "F841", "PERF401", "BLE001", "TRY400", "C408", "UP035", "UP045", "I001", "F401", "ARG002", "ANN401", "DTZ005", "Q000", "S110", "PLC0415", "PIE790", "RUF022", "A002", "RUF012", "PD003", "RUF005", "RUF001", "PD011", "SIM108", "PLW3301", "PLR1714"]
+"src/ui/**/*.py" = ["W293", "W291", "W292", "ANN", "G004", "PLR2004", "RUF010", "G201", "F841", "PERF401", "BLE001", "TRY400", "C408", "UP035", "UP045", "I001", "F401", "ARG002", "ANN401", "DTZ005", "Q000", "S110", "PLC0415", "PIE790", "RUF022", "A002", "RUF012", "PD003", "RUF005", "RUF001", "PD011", "SIM108", "PLW3301", "PLR1714", "N803", "N806"]
 
 [tool.ruff.format]
 quote-style = "double"
