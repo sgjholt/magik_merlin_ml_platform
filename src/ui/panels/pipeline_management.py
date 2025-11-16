@@ -151,7 +151,7 @@ class PipelineManagementPanel:
 
         self.schedule_button = pn.widgets.Button(
             name="📅 Schedule",
-            button_type="info",
+            button_type="primary",
             width=120,
             disabled=True,
         )
