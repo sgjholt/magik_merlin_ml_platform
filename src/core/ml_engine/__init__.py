@@ -28,7 +28,16 @@ from .classical import (
     XGBoostClassifier,
     XGBoostRegressor,
 )
-from .deep_learning import LightningClassifier, LightningRegressor
+
+# Optional PyTorch Lightning imports (requires torch/lightning)
+try:
+    from .deep_learning import LightningClassifier, LightningRegressor
+
+    _HAS_LIGHTNING = True
+except ImportError:
+    _HAS_LIGHTNING = False
+    LightningClassifier = None  # type: ignore[misc, assignment]
+    LightningRegressor = None  # type: ignore[misc, assignment]
 
 __all__ = [
     "AutoMLPipeline",
@@ -39,10 +48,12 @@ __all__ = [
     "CatBoostRegressor",
     "LightGBMClassifier",
     "LightGBMRegressor",
-    "LightningClassifier",
-    "LightningRegressor",
     "ModelRegistry",
     "XGBoostClassifier",
     "XGBoostRegressor",
     "model_registry",
 ]
+
+# Add Lightning models to __all__ if available
+if _HAS_LIGHTNING:
+    __all__.extend(["LightningClassifier", "LightningRegressor"])
