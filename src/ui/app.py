@@ -134,7 +134,7 @@ class MLPlatformApp:
 
             **Core capabilities:**
 
-            • **PyCaret Integration** - Automated ML workflows
+            • **Custom ML Engine** - XGBoost, LightGBM, CatBoost with AutoML
             • **MLflow Tracking** - Experiment management and versioning
             • **Multiple Data Sources** - Files, cloud, databases
             • **Interactive Visualizations** - Rich charts

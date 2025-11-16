@@ -334,27 +334,6 @@ All models inherit from `BaseClassifier` or `BaseRegressor` and support:
 - `get_metadata()` - Get model metadata (features, is_fitted, etc.)
 - `get_feature_importance()` - Get feature importance DataFrame
 
-## Backward Compatibility
-
-The old PyCaret interface is still available through a compatibility layer:
-
-```python
-from src.core.ml.pycaret_integration import AutoMLWorkflow
-
-# Works like old PyCaret interface but uses new ML engine internally
-workflow = AutoMLWorkflow()
-
-results = workflow.run_automl(
-    data=data,
-    task_type="classification",
-    target="target_column",
-    tune_hyperparameters=True
-)
-
-predictions = workflow.get_predictions(data=new_data)
-importance = workflow.get_model_interpretation()
-```
-
 ## Troubleshooting
 
 **Issue: "No models available for task type"**

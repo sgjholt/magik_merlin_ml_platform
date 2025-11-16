@@ -7,7 +7,7 @@ import panel as pn
 
 from src.core.experiments import ExperimentManager, ExperimentStatus, ExperimentTracker
 from src.core.logging import get_logger
-from src.core.ml.pycaret_integration import AutoMLWorkflow
+from src.core.ml_engine import AutoMLPipeline
 
 
 class ExperimentationPanel:
@@ -15,7 +15,7 @@ class ExperimentationPanel:
         self.current_experiment = None
         self.experiment_tracker = experiment_tracker
         self.experiment_manager = ExperimentManager(experiment_tracker)
-        self.automl_workflow = None
+        self.automl_pipeline = None
         self.current_data = None
         self.experiment_completed_callback = None
         self.logger = get_logger(__name__, pipeline_stage="experimentation_ui")
@@ -267,75 +267,52 @@ class ExperimentationPanel:
                 self.experiment_tracker.end_run()
 
     def _run_experiment(self) -> None:
-        """Run real ML experiment using PyCaret"""
+        """Run real ML experiment using custom ML engine"""
         try:
-            # Initialize AutoML workflow
-            self.automl_workflow = AutoMLWorkflow(self.experiment_tracker)
+            # Prepare data
+            self._log_message("Preparing data...")
+            self.progress_bar.value = 10
+
+            target_col = self.target_select.value
+            X = self.current_data.drop(columns=[target_col])
+            y = self.current_data[target_col]
+
+            # Initialize AutoML pipeline
+            self.automl_pipeline = AutoMLPipeline(
+                task_type=self.task_type_select.value.lower(),
+                experiment_tracker=self.experiment_tracker,
+            )
 
             self._log_message("Setting up experiment...")
             self.progress_bar.value = 20
 
-            # Map UI model names to PyCaret model codes
-            model_mapping = {
-                "Random Forest": "rf",
-                "XGBoost": "xgboost",
-                "LightGBM": "lightgbm",
-                "Logistic Regression": "lr",
-                "SVM": "svm",
-                "Neural Network": "mlp",
-            }
-
-            # Get selected models
-            selected_models = [
-                model_mapping.get(m, m.lower().replace(" ", "_"))
-                for m in self.model_select.value
-            ]
-
             self._log_message("Starting model comparison...")
             self.progress_bar.value = 40
 
-            # Run AutoML
-            results = self.automl_workflow.run_automl(
-                data=self.current_data,
-                task_type=self.task_type_select.value.lower(),
-                target=self.target_select.value,
-                model_selection=(
-                    "compare_all" if len(selected_models) > 1 else selected_models[0]
-                ),
-                tune_hyperparameters=True,
-            )
+            # Run model comparison
+            comparison_results = self.automl_pipeline.compare_models(X, y, cv=5)
 
             self.progress_bar.value = 80
             self._log_message("Processing results...")
 
             # Extract and display results
-            if results.get("evaluations"):
-                results_data = []
-                for i, evaluation in enumerate(results["evaluations"]):
-                    metrics = evaluation.get("metrics", {})
-                    if isinstance(metrics, dict):
-                        # Extract common metrics
-                        model_name = f"Model_{i + 1}"
-                        if hasattr(evaluation.get("model"), "__class__"):
-                            model_name = evaluation["model"].__class__.__name__
+            results_data = []
+            for model_name, metrics in comparison_results.items():
+                if isinstance(metrics, dict):
+                    results_data.append(
+                        {
+                            "Model": model_name,
+                            "Accuracy": metrics.get("accuracy", metrics.get("test_accuracy", 0.0)),
+                            "Precision": metrics.get("precision", 0.0),
+                            "Recall": metrics.get("recall", 0.0),
+                            "F1-Score": metrics.get("f1", 0.0),
+                        }
+                    )
 
-                        results_data.append(
-                            {
-                                "Model": model_name,
-                                "Accuracy": metrics.get("Accuracy", 0.0),
-                                "Precision": metrics.get(
-                                    "Prec.", metrics.get("Precision", 0.0)
-                                ),
-                                "Recall": metrics.get("Recall", 0.0),
-                                "F1-Score": metrics.get("F1", 0.0),
-                                "AUC": metrics.get("AUC", 0.0),
-                            }
-                        )
-
-                if results_data:
-                    self.results_table.object = pd.DataFrame(results_data)
-                else:
-                    self._log_message("No results to display")
+            if results_data:
+                self.results_table.object = pd.DataFrame(results_data)
+            else:
+                self._log_message("No results to display")
 
             self.progress_bar.value = 100
             self._log_message("Experiment completed successfully!")
@@ -365,13 +342,10 @@ class ExperimentationPanel:
             # Refresh history
             self.experiment_history_table.object = self._get_experiment_history()
 
-        except ImportError as e:
-            self._log_message(f"PyCaret not available: {e!s}")
-            self._log_message("Falling back to simulation mode...")
-            self._simulate_experiment()
         except Exception as e:
+            self.logger.error("Error during experiment", exc_info=True)
             self._log_message(f"Error during experiment: {e!s}")
-            # Fallback to simulation for demo purposes
+            self._log_message("Falling back to simulation mode...")
             self._simulate_experiment()
 
         finally:
