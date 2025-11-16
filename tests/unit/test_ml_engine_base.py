@@ -34,14 +34,16 @@ class MockClassifier(BaseClassifier):
 
     def predict(self, X):
         if not self.is_fitted:
-            raise RuntimeError("Model must be fitted first")
+            msg = "Model must be fitted first"
+            raise RuntimeError(msg)
         X = self._validate_input(X)
         # Return random predictions from training classes
         return np.random.choice(self.mock_classes, size=len(X))
 
     def predict_proba(self, X):
         if not self.is_fitted:
-            raise RuntimeError("Model must be fitted first")
+            msg = "Model must be fitted first"
+            raise RuntimeError(msg)
         X = self._validate_input(X)
         n_classes = len(self.mock_classes)
         # Return random probabilities
@@ -63,7 +65,8 @@ class MockRegressor(BaseRegressor):
 
     def predict(self, X):
         if not self.is_fitted:
-            raise RuntimeError("Model must be fitted first")
+            msg = "Model must be fitted first"
+            raise RuntimeError(msg)
         X = self._validate_input(X)
         # Return random predictions
         return np.random.random(len(X))

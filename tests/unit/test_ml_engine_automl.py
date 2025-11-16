@@ -257,7 +257,7 @@ class TestAutoMLHyperparameterOptimization:
 
     def test_optimization_param_spaces(self, classification_dataset):
         """Test that different models have appropriate param spaces."""
-        X, y = classification_dataset
+        _X, _y = classification_dataset
         pipeline = AutoMLPipeline(task_type="classification")
 
         # Test XGBoost param space

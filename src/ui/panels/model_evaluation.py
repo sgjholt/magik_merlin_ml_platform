@@ -120,12 +120,12 @@ class ModelEvaluationPanel:
 
         self.metrics_table.object = self.mock_metrics
 
-    def _on_refresh_models(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_refresh_models(self, event: Any) -> None:
         """Refresh available models from MLflow"""
         # In real implementation, this would query MLflow registry
         self._initialize_mock_data()
 
-    def _on_model_selection_change(self, event: Any) -> None:  # noqa: ANN401
+    def _on_model_selection_change(self, event: Any) -> None:
         """Handle model selection change"""
         if event.new:
             self.compare_button.disabled = False
@@ -135,7 +135,7 @@ class ModelEvaluationPanel:
             if model_name:
                 self._update_model_details(model_name)
 
-    def _on_compare_models(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_compare_models(self, event: Any) -> None:
         """Compare selected models"""
         if not self.model_select.value:
             return
@@ -151,7 +151,7 @@ class ModelEvaluationPanel:
         # Create visualization based on selected type
         self._create_visualization(selected_data)
 
-    def _on_viz_type_change(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_viz_type_change(self, event: Any) -> None:
         """Handle visualization type change"""
         if self.model_select.value:
             selected_data = self.mock_metrics[

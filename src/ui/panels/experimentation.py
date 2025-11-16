@@ -176,7 +176,7 @@ class ExperimentationPanel:
             # Enable experiment start
             self.start_experiment_button.disabled = False
 
-    def _on_start_experiment(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_start_experiment(self, event: Any) -> None:
         """Start ML experiment with enhanced tracking"""
         if not self.experiment_name.value:
             self._log_message("Error: Please enter an experiment name")
@@ -247,7 +247,7 @@ class ExperimentationPanel:
             self.logger.error("Failed to create experiment", exc_info=True)
             self._log_message(f"Error creating experiment: {str(e)}")
 
-    def _on_stop_experiment(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_stop_experiment(self, event: Any) -> None:
         """Stop current experiment"""
         self.start_experiment_button.disabled = False
         self.stop_experiment_button.disabled = True
@@ -360,7 +360,7 @@ class ExperimentationPanel:
             self._log_message(f"PyCaret not available: {e!s}")
             self._log_message("Falling back to simulation mode...")
             self._simulate_experiment()
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             self._log_message(f"Error during experiment: {e!s}")
             # Fallback to simulation for demo purposes
             self._simulate_experiment()
@@ -376,7 +376,7 @@ class ExperimentationPanel:
         # Simulate model training progress
         for i in range(0, 101, 20):
             self.progress_bar.value = i
-            if i < 100:  # noqa: PLR2004
+            if i < 100:
                 model_name = self.model_select.value[
                     i // 20 % len(self.model_select.value)
                 ]
@@ -462,12 +462,12 @@ class ExperimentationPanel:
             self.logger.error("Failed to get experiment history", exc_info=True)
             return pd.DataFrame(columns=["Name", "Status", "Task Type", "Duration", "Created"])
             
-    def _on_refresh_history(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_refresh_history(self, event: Any) -> None:
         """Refresh experiment history display"""
         self.experiment_history_table.object = self._get_experiment_history()
         self._log_message("Experiment history refreshed")
         
-    def _on_compare_experiments(self, event: Any) -> None:  # noqa: ANN401, ARG002
+    def _on_compare_experiments(self, event: Any) -> None:
         """Compare selected experiments"""
         # For now, compare the last 3 completed experiments
         completed_experiments = self.experiment_manager.list_experiments(status=ExperimentStatus.COMPLETED)

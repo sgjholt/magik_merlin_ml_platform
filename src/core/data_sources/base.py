@@ -33,7 +33,7 @@ class DataSource(ABC):
         pass
 
     @abstractmethod
-    def load_data(self, query: str, **kwargs) -> pd.DataFrame:  # noqa: ANN003
+    def load_data(self, query: str, **kwargs) -> pd.DataFrame:
         pass
 
     @abstractmethod

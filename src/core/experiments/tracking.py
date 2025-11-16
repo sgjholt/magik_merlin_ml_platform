@@ -3,7 +3,6 @@ Experiment tracking integration with MLflow
 """
 
 import logging
-import time
 from typing import Any
 
 import requests
@@ -43,7 +42,7 @@ class ExperimentTracker:
         try:
             # Just check if the root endpoint returns the MLflow UI
             response = requests.get(self.tracking_uri, timeout=timeout)
-            return response.status_code == 200 and 'MLflow' in response.text
+            return response.status_code == 200 and "MLflow" in response.text
         except requests.exceptions.RequestException:
             return False
             
@@ -82,7 +81,7 @@ class ExperimentTracker:
             self.logger.info(f"Started MLflow run: {self.active_run.info.run_id}")
             return True
         except Exception as e:
-            self.logger.error(f"Failed to start MLflow run: {e}")
+            self.logger.exception(f"Failed to start MLflow run: {e}")
             self._server_available = False
             return False
 
@@ -93,7 +92,7 @@ class ExperimentTracker:
                 mlflow.end_run()
                 self.active_run = None
             except Exception as e:
-                self.logger.error(f"Failed to end MLflow run: {e}")
+                self.logger.exception(f"Failed to end MLflow run: {e}")
 
     def log_params(self, params: dict[str, Any]) -> None:
         """Log parameters to MLflow"""
@@ -104,7 +103,7 @@ class ExperimentTracker:
             for key, value in params.items():
                 mlflow.log_param(key, value)
         except Exception as e:
-            self.logger.error(f"Failed to log parameters: {e}")
+            self.logger.exception(f"Failed to log parameters: {e}")
 
     def log_metrics(self, metrics: dict[str, Any]) -> None:
         """Log metrics to MLflow"""
@@ -116,7 +115,7 @@ class ExperimentTracker:
                 if isinstance(value, (int, float)):
                     mlflow.log_metric(key, value)
         except Exception as e:
-            self.logger.error(f"Failed to log metrics: {e}")
+            self.logger.exception(f"Failed to log metrics: {e}")
 
     def log_artifact(self, name: str, artifact: Any) -> None:
         """Log artifacts to MLflow"""
@@ -127,7 +126,7 @@ class ExperimentTracker:
             # For now, just log that an artifact was created
             mlflow.log_param(f"artifact_{name}", "created")
         except Exception as e:
-            self.logger.error(f"Failed to log artifact: {e}")
+            self.logger.exception(f"Failed to log artifact: {e}")
 
     def log_model(self, model: Any, name: str = "model") -> None:
         """Log a model to MLflow"""
@@ -141,7 +140,7 @@ class ExperimentTracker:
             else:
                 mlflow.log_param(f"model_{name}", str(type(model)))
         except Exception as e:
-            self.logger.error(f"Failed to log model: {e}")
+            self.logger.exception(f"Failed to log model: {e}")
 
     def is_active(self) -> bool:
         """Check if tracking is active"""

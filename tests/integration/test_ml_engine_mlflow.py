@@ -93,7 +93,7 @@ class TestMLEngineMLflowIntegration:
 
         # Check that metrics contain model scores
         logged_metrics = tracker.log_metrics.call_args[0][0]
-        assert any("xgboost" in str(key).lower() for key in logged_metrics.keys())
+        assert any("xgboost" in str(key).lower() for key in logged_metrics)
 
     @pytest.mark.skipif(not XGBOOST_AVAILABLE, reason="XGBoost not available")
     def test_hyperparameter_optimization_logs_params(self, sample_data):

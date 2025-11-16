@@ -12,7 +12,6 @@ Provides comprehensive experiment lifecycle management with:
 
 import json
 import pickle
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -152,7 +151,7 @@ class Experiment:
         
         self.errors.append(error_info)
         
-        self.logger.error(f"Error in stage {stage}", exc_info=True, extra={
+        self.logger.error(f"Error in stage {stage}", extra={
             "stage": stage,
             "error_type": type(error).__name__,
             "context": context
@@ -327,7 +326,7 @@ class ExperimentManager:
             
         experiment = self.experiments[experiment_id]
         experiment.add_error(error, "experiment_failure", context)
-        experiment.update_status(ExperimentStatus.FAILED, f"Experiment failed: {str(error)}")
+        experiment.update_status(ExperimentStatus.FAILED, f"Experiment failed: {error!s}")
         
         # End MLflow run
         if self.experiment_tracker:
@@ -345,7 +344,8 @@ class ExperimentManager:
         """Save model with comprehensive metadata"""
         
         if experiment_id not in self.experiments:
-            raise ValueError(f"Experiment {experiment_id} not found")
+            msg = f"Experiment {experiment_id} not found"
+            raise ValueError(msg)
             
         experiment = self.experiments[experiment_id]
         model_id = str(uuid4())
@@ -380,7 +380,8 @@ class ExperimentManager:
         """Save experiment artifact with metadata"""
         
         if experiment_id not in self.experiments:
-            raise ValueError(f"Experiment {experiment_id} not found")
+            msg = f"Experiment {experiment_id} not found"
+            raise ValueError(msg)
             
         experiment = self.experiments[experiment_id]
         artifact_id = str(uuid4())
@@ -465,7 +466,7 @@ class ExperimentManager:
             
         for metadata_file in self.metadata_dir.glob("*.json"):
             try:
-                with open(metadata_file, "r") as f:
+                with open(metadata_file) as f:
                     data = json.load(f)
                     
                 experiment = Experiment(

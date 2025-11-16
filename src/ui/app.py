@@ -230,7 +230,7 @@ class MLPlatformApp:
         ] += 3  # Average number of models per experiment
         self._update_session_stats()
 
-    def serve(  # noqa: ANN201
+    def serve(
         self,
         port: int = 5006,
         *,
@@ -265,7 +265,7 @@ class MLPlatformApp:
             self.stop_mlflow_button.disabled = True
             self.mlflow_ui_button.disabled = True
 
-    def _on_start_mlflow(self, event: any) -> None:  # noqa: ARG002
+    def _on_start_mlflow(self, event: any) -> None:
         """Start MLflow server"""
         self.logger.info("Starting MLflow server from UI")
 
@@ -305,7 +305,7 @@ class MLPlatformApp:
         # Start in background thread to avoid blocking UI
         threading.Thread(target=start_server, daemon=True).start()
 
-    def _on_stop_mlflow(self, event: any) -> None:  # noqa: ARG002
+    def _on_stop_mlflow(self, event: any) -> None:
         """Stop MLflow server"""
         self.logger.info("Stopping MLflow server from UI")
 
@@ -323,7 +323,7 @@ class MLPlatformApp:
             msg = f"Error stopping MLflow server: {e!s}"
             self.logger.exception(msg)
 
-    def _on_open_mlflow_ui(self, event: any) -> None:  # noqa: ARG002
+    def _on_open_mlflow_ui(self, event: any) -> None:
         """Open MLflow UI in browser"""
         self.logger.info("Opening MLflow UI")
 
