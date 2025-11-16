@@ -38,8 +38,9 @@ dev = [
     "pytest-cov>=4.0.0",
     "pytest-mock>=3.10.0",
     "pytest-asyncio>=0.21.0",
-    "sphinx>=6.0.0",
-    "sphinx-rtd-theme>=1.2.0",
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
     "python-semantic-release>=8.0.0",
 ]
 
@@ -128,38 +129,44 @@ select = [
     "RUF",  # Ruff-specific rules
 ]
 
+# Globally ignored rules (apply to all files)
+# See docs/development/code-quality.md for detailed explanations
 ignore = [
     "E501",    # Line too long (handled by formatter)
-    "ANN101",  # Missing type annotation for self
-    "ANN102",  # Missing type annotation for cls
+    "ANN101",  # Missing type annotation for self (implicit in Python)
+    "ANN102",  # Missing type annotation for cls (implicit in Python)
     "COM812",  # Trailing comma missing (conflicts with formatter)
     "ISC001",  # Implicit string concatenation (conflicts with formatter)
-    "T201",    # Print statements (allowed in our case)
-    "S101",    # Use of assert (common in tests)
-    "PTH123",  # Path.open should be used instead of built-in open (not always applicable)
-    "FBT001",  # Boolean positional arg in function definition
-    "FBT002",  # Boolean default value in function definition
-    "PLR0913", # Too many arguments in function definition
-    "PLR0912", # Too many branches
-    "PLR0915", # Too many statements
+    "T201",    # Print statements (allowed for CLI output and debugging)
+    "S101",    # Use of assert (common and acceptable in tests)
+    "PTH123",  # Path.open vs built-in open (not always applicable)
+    "FBT001",  # Boolean positional arg (acceptable for sklearn compatibility)
+    "FBT002",  # Boolean default value (acceptable for sklearn compatibility)
+    "PLR0913", # Too many arguments (ML models often need many hyperparameters)
+    "PLR0912", # Too many branches (acceptable for model selection logic)
+    "PLR0915", # Too many statements (acceptable for comprehensive pipelines)
 ]
 
+# Per-file ignore rules
+# See docs/development/code-quality.md for detailed explanations of ML-specific rules
 [tool.ruff.lint.per-file-ignores]
+# Test files - relaxed rules for test code
 "tests/**/*.py" = [
-    "S101",    # Use of assert
+    "S101",    # Use of assert (standard in pytest)
     "ANN",     # Type annotations not required in tests
-    "PLR2004", # Magic value used in comparison
-    "SLF001",  # Private member accessed
+    "PLR2004", # Magic values acceptable in test assertions
+    "SLF001",  # Private member access needed for testing internals
 ]
+# ML Engine - follows ML/data science conventions (sklearn, pandas, numpy)
 "src/core/ml_engine/**/*.py" = [
-    "N803",    # Argument name should be lowercase (X, y are ML conventions)
-    "N806",    # Variable should be lowercase (X, y are ML conventions)
-    "ANN401",  # Allow typing.Any in ML engine (needed for flexibility)
-    "TID252",  # Relative imports OK in ml_engine package
-    "G004",    # f-strings in logging OK for better readability
-    "PLR2004", # Magic values OK in ML code (e.g., checking n_classes > 2)
-    "TC001",   # Type-checking block imports too strict for our use case
-    "TC002",   # Type-checking block imports too strict for our use case
+    "N803",    # IMPORTANT: X (features) and y (targets) are universal ML conventions
+    "N806",    # IMPORTANT: Uppercase X follows sklearn, pandas, numpy standards
+    "ANN401",  # typing.Any needed - ML functions accept many types (DataFrame, ndarray, etc.)
+    "TID252",  # Relative imports (.base, .classical) cleaner within ml_engine package
+    "G004",    # f-strings in logging - modern Python 3.13+ style, more readable
+    "PLR2004", # Magic numbers are domain knowledge (e.g., n_classes > 2 = multiclass)
+    "TC001",   # Imports used at runtime, not just type-checking
+    "TC002",   # Imports used at runtime, not just type-checking
 ]
 
 [tool.ruff.format]
