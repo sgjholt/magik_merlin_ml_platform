@@ -80,7 +80,9 @@ def demo_classification():
     print_section("STEP 2: Best Model Selection")
     best_model = pipeline.get_best_model()
     print(f"✨ Best model selected: {pipeline.best_model_name}")
-    print(f"   Training score: {results.iloc[0]['cv_mean']:.4f} (±{results.iloc[0]['cv_std']:.4f})")
+    print(
+        f"   Training score: {results.iloc[0]['cv_mean']:.4f} (±{results.iloc[0]['cv_std']:.4f})"
+    )
 
     # 5. Make predictions
     print_section("STEP 3: Making Predictions")
@@ -171,11 +173,13 @@ def demo_regression():
     predictions = best_model.predict(X_test)
 
     print("\n📊 Test set predictions (first 10):")
-    comparison = pd.DataFrame({
-        "True": y_test.values[:10],
-        "Predicted": predictions[:10],
-        "Error": (y_test.values[:10] - predictions[:10])
-    })
+    comparison = pd.DataFrame(
+        {
+            "True": y_test.values[:10],
+            "Predicted": predictions[:10],
+            "Error": (y_test.values[:10] - predictions[:10]),
+        }
+    )
     print(comparison.to_string(index=False))
 
     # Test score
@@ -230,7 +234,9 @@ def demo_individual_model():
 
     # Get parameters
     params = model.get_params()
-    print(f"\n   Model parameters: n_estimators={params['n_estimators']}, max_depth={params['max_depth']}")
+    print(
+        f"\n   Model parameters: n_estimators={params['n_estimators']}, max_depth={params['max_depth']}"
+    )
 
     # Feature importance
     importance_df = model.get_feature_importance()
@@ -271,7 +277,9 @@ def main():
         print("✅ All demos completed successfully!")
         print("\n📚 Next Steps:")
         print("   1. Check docs/ML_ENGINE_GUIDE.md for comprehensive documentation")
-        print("   2. Explore examples/ml_engine_tutorial.ipynb for interactive examples")
+        print(
+            "   2. Explore examples/ml_engine_tutorial.ipynb for interactive examples"
+        )
         print("   3. Try with your own data!")
         print("\n🚀 Happy ML Engineering!")
 
@@ -281,11 +289,14 @@ def main():
         print("\n💡 Install ML dependencies with:")
         print("   uv sync --extra ml")
         print("   # OR")
-        print("   pip install xgboost lightgbm catboost optuna scikit-learn pandas numpy")
+        print(
+            "   pip install xgboost lightgbm catboost optuna scikit-learn pandas numpy"
+        )
         sys.exit(1)
     except Exception as e:
         print(f"\n❌ Unexpected error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 

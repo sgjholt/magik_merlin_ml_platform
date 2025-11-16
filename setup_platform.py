@@ -3,7 +3,7 @@
 ML Platform Setup Script
 
 This script sets up the ML Platform environment including:
-- MLflow server initialization  
+- MLflow server initialization
 - Directory structure creation
 - Basic configuration validation
 - Dependency checks
@@ -51,7 +51,7 @@ def create_directories() -> None:
         "experiments/models",
         "experiments/artifacts",
         "data",
-        "notebooks"
+        "notebooks",
     ]
 
     for dir_path in directories:
@@ -67,9 +67,10 @@ def setup_mlflow() -> bool:
     try:
         result = subprocess.run(
             [sys.executable, "scripts/start_mlflow.py", "status"],
-            check=False, capture_output=True,
+            check=False,
+            capture_output=True,
             text=True,
-            timeout=10
+            timeout=10,
         )
 
         if result.returncode == 0 and "running" in result.stdout.lower():
@@ -84,7 +85,7 @@ def setup_mlflow() -> bool:
         process = subprocess.Popen(
             [sys.executable, "scripts/start_mlflow.py", "start", "--host", "localhost"],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
         )
 
         # Give it time to start
@@ -124,6 +125,7 @@ def setup_platform(skip_mlflow: bool, reset: bool) -> None:
     if reset:
         print("🔄 Resetting platform directories...")
         import shutil
+
         for dir_name in ["mlflow_data", "experiments", "logs"]:
             if Path(dir_name).exists():
                 shutil.rmtree(dir_name)
@@ -197,6 +199,7 @@ def validate_setup() -> None:
     # Test basic functionality
     try:
         from src.ui.app import MLPlatformApp
+
         app = MLPlatformApp()
         print("✅ ML Platform app initializes successfully")
     except Exception as e:

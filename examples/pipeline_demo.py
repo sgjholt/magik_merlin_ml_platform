@@ -207,7 +207,7 @@ def demo_ml_pipeline(data_path: Path, output_dir: Path) -> None:
     result = executor.execute(pipeline, progress_callback=on_progress)
 
     # Display results
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("Execution Results")
     print("=" * 60)
     print(f"{'Status:':<20} {result.status.value}")

@@ -36,24 +36,21 @@ HAS_LIGHTNING = _check_import("lightning")
 
 # Pytest markers for optional dependencies
 requires_xgboost = pytest.mark.skipif(
-    not HAS_XGBOOST,
-    reason="XGBoost not installed (install with: uv sync --extra ml)"
+    not HAS_XGBOOST, reason="XGBoost not installed (install with: uv sync --extra ml)"
 )
 requires_lightgbm = pytest.mark.skipif(
-    not HAS_LIGHTGBM,
-    reason="LightGBM not installed (install with: uv sync --extra ml)"
+    not HAS_LIGHTGBM, reason="LightGBM not installed (install with: uv sync --extra ml)"
 )
 requires_catboost = pytest.mark.skipif(
-    not HAS_CATBOOST,
-    reason="CatBoost not installed (install with: uv sync --extra ml)"
+    not HAS_CATBOOST, reason="CatBoost not installed (install with: uv sync --extra ml)"
 )
 requires_pytorch = pytest.mark.skipif(
     not HAS_TORCH or not HAS_LIGHTNING,
-    reason="PyTorch/Lightning not installed (install with: uv sync --extra ml)"
+    reason="PyTorch/Lightning not installed (install with: uv sync --extra ml)",
 )
 requires_ml = pytest.mark.skipif(
     not (HAS_XGBOOST or HAS_LIGHTGBM or HAS_CATBOOST),
-    reason="No ML libraries installed (install with: uv sync --extra ml)"
+    reason="No ML libraries installed (install with: uv sync --extra ml)",
 )
 
 

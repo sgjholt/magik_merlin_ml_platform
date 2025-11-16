@@ -27,13 +27,13 @@ from src.core.pipeline_orchestration import (
 # Check if XGBoost is available
 try:
     import xgboost
+
     HAS_XGBOOST = True
 except ImportError:
     HAS_XGBOOST = False
 
 requires_xgboost = pytest.mark.skipif(
-    not HAS_XGBOOST,
-    reason="XGBoost not installed (install with: uv sync --extra ml)"
+    not HAS_XGBOOST, reason="XGBoost not installed (install with: uv sync --extra ml)"
 )
 
 

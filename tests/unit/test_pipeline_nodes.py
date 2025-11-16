@@ -25,13 +25,13 @@ from src.core.pipeline_orchestration.nodes import (
 # Check if XGBoost is available
 try:
     import xgboost
+
     HAS_XGBOOST = True
 except ImportError:
     HAS_XGBOOST = False
 
 requires_xgboost = pytest.mark.skipif(
-    not HAS_XGBOOST,
-    reason="XGBoost not installed (install with: uv sync --extra ml)"
+    not HAS_XGBOOST, reason="XGBoost not installed (install with: uv sync --extra ml)"
 )
 
 
@@ -196,10 +196,12 @@ class TestFeatureScalerNode:
         """Test scaling a single DataFrame."""
         # Use larger sample size for more stable scaling statistics
         np.random.seed(42)
-        data = pd.DataFrame({
-            "a": np.random.randn(100) * 10 + 50,
-            "b": np.random.randn(100) * 5 + 20,
-        })
+        data = pd.DataFrame(
+            {
+                "a": np.random.randn(100) * 10 + 50,
+                "b": np.random.randn(100) * 5 + 20,
+            }
+        )
         input_output = NodeOutput(data=data)
 
         node = FeatureScalerNode(node_id="scaler1")
