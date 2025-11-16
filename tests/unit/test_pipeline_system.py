@@ -26,7 +26,7 @@ from src.core.pipeline_orchestration import (
 
 # Check if XGBoost is available
 try:
-    import xgboost  # noqa: F401
+    import xgboost
     HAS_XGBOOST = True
 except ImportError:
     HAS_XGBOOST = False
