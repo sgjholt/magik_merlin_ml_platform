@@ -213,10 +213,13 @@ class TestExperimentTracker:
     @pytest.mark.skipif(not MLFLOW_AVAILABLE, reason="MLflow not installed")
     def test_is_active_with_run(self):
         """Test is_active with active run"""
-        with patch.object(ExperimentTracker, "_check_mlflow_server", return_value=True):
-            tracker = ExperimentTracker()
-            tracker.active_run = Mock()
-            assert tracker.is_active() is True
+        with patch("src.core.experiments.tracking.mlflow") as mock_mlflow:
+            with patch.object(
+                ExperimentTracker, "_check_mlflow_server", return_value=True
+            ):
+                tracker = ExperimentTracker()
+                tracker.active_run = Mock()
+                assert tracker.is_active() is True
 
 
 class TestMLflowIntegrationFallbacks:
