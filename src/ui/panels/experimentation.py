@@ -302,7 +302,9 @@ class ExperimentationPanel:
                     results_data.append(
                         {
                             "Model": model_name,
-                            "Accuracy": metrics.get("accuracy", metrics.get("test_accuracy", 0.0)),
+                            "Accuracy": metrics.get(
+                                "accuracy", metrics.get("test_accuracy", 0.0)
+                            ),
                             "Precision": metrics.get("precision", 0.0),
                             "Recall": metrics.get("recall", 0.0),
                             "F1-Score": metrics.get("f1", 0.0),
